@@ -9,7 +9,7 @@ import com.qxlabai.messenger.screeens.LockScreen
 
 @Composable
 fun SetupNavigation(navHostController: NavHostController) {
-    NavHost(navController = navHostController, startDestination = Destinations.LockScreen.route) {
+    NavHost(navController = navHostController, startDestination = Destinations.ConversationScreen.route) {
         composable(Destinations.LockScreen.route){
             LockScreen(navHostController = navHostController)
         }
