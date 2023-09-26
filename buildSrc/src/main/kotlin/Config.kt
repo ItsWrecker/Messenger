@@ -4,7 +4,7 @@ object Config {
     object Android {
         const val androidMinSdkVersion = 28
         const val androidTargetVersion = 33
-        const val androidCompileSdkVersion = 33
+        const val androidCompileSdkVersion = 34
         const val androidBuildToolVersion = ""
     }
 
@@ -16,6 +16,7 @@ object Config {
         const val androidLibrary = "com.android.library"
         const val javaLibrary = "java-library"
         const val kotlinLibrary = "org.jetbrains.kotlin.jvm"
+        const val serialization = "org.jetbrains.kotlin.plugin.serialization"
     }
 
 

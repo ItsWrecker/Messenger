@@ -4,6 +4,16 @@ object Dependencies {
         const val coreKtx = "androidx.core:core-ktx:${Versions.AndroidX.coreKtx}"
         const val lifecycleKtx =
             "androidx.lifecycle:lifecycle-runtime-ktx:${Versions.AndroidX.lifecycleRuntimeKtx}"
+        const val inject = "javax.inject:javax.inject:1"
+        const val viewmodel =
+            "androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.AndroidX.lifecycleRuntimeKtx}"
+    }
+
+    object Coroutine {
+        const val coroutine =
+            "org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.Coroutine.android}"
+        const val coroutineCore =
+            "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.Coroutine.core}"
     }
 
     object Compose {
@@ -16,7 +26,8 @@ object Dependencies {
         const val composeMaterial = "androidx.compose.material3:material3"
         const val composeNavigation =
             "androidx.navigation:navigation-compose:${Versions.Compose.navigation}"
-        const val constraintLayout = "androidx.constraintlayout:constraintlayout-compose:${Versions.Compose.constraintLayout}"
+        const val constraintLayout =
+            "androidx.constraintlayout:constraintlayout-compose:${Versions.Compose.constraintLayout}"
     }
 
     object UnitTest {
@@ -39,5 +50,16 @@ object Dependencies {
     object Hilt {
         const val hiltCore = "com.google.dagger:hilt-android:${Versions.hiltVersion}"
         const val hiltCompiler = "com.google.dagger:hilt-android-compiler:${Versions.hiltVersion}"
+    }
+
+    object Local {
+        const val dataStore = "androidx.datastore:datastore:${Versions.Local.dataStore}"
+    }
+
+    object Collections {
+        const val immutable =
+            "org.jetbrains.kotlinx:kotlinx-collections-immutable:${Versions.Collections.immutable}"
+        const val json =
+            "org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.Collections.json}"
     }
 }

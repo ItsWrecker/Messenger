@@ -1,6 +1,7 @@
 plugins {
     id(Config.Plugins.androidLibrary)
     id(Config.Plugins.kotlin)
+    id(Config.Plugins.serialization)
 
 }
 
@@ -34,7 +35,12 @@ android {
 }
 
 dependencies {
+    implementation(project(":domain"))
     Modules.Data.core.forEach { implementation(it) }
     Modules.Data.unitTest.forEach { implementation(it) }
+    Modules.Data.local.forEach { implementation(it) }
+    Modules.Data.collections.forEach { implementation(it) }
+
+
     Modules.Data.androidTest.forEach { androidTestImplementation(it) }
 }

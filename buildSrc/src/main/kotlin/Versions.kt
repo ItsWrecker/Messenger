@@ -5,9 +5,14 @@ object Versions {
         const val gradle = "8.1.1"
     }
 
+    object Coroutine {
+        const val android = "1.3.9"
+        const val core = "1.7.3"
+    }
     object AndroidX {
         const val coreKtx = "1.12.0"
         const val lifecycleRuntimeKtx = "2.6.2"
+
 
     }
 
@@ -27,6 +32,13 @@ object Versions {
         const val espressoCore = "3.5.1"
     }
 
+    object Local {
+        const val dataStore = "1.0.0"
+    }
+    object Collections {
+        const val immutable = "0.3.5"
+        const val json = "1.3.2"
+    }
     const val hiltVersion = "2.44"
 
 }
