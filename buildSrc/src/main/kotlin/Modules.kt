@@ -61,14 +61,29 @@ object Modules {
             Dependencies.AndroidTest.junitExt,
             Dependencies.AndroidTest.expressoCore
         )
+        val xmpp = listOf(
+//            Dependencies.Xmpp.conversations,
+            Dependencies.Xmpp.smackAndroid,
+            Dependencies.Xmpp.smackExt,
+            Dependencies.Xmpp.smackTcp,
+        )
 
+        val libs = listOf(
+            Dependencies.Hilt.hiltCore
+        )
+        val kapt = listOf(
+            Dependencies.Hilt.hiltCompiler
+        )
     }
 
     object Presentation {
         val core = listOf(
             Dependencies.Core.coreKtx,
             Dependencies.Coroutine.coroutine,
-            Dependencies.Core.viewmodel
+            Dependencies.Core.viewmodel,
+            Dependencies.Core.lifecycleKtx,
+            Dependencies.Core.lifecycleCore,
+            Dependencies.Core.service
         )
         val libs = listOf(
             Dependencies.Hilt.hiltCore

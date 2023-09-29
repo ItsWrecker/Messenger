@@ -53,16 +53,26 @@ android {
 }
 
 dependencies {
-
+    implementation(project(":presentation"))
     Modules.App.composeBOM.let { implementation(platform(it)) }
     Modules.App.core.forEach { implementation(it) }
     Modules.App.compose.forEach { implementation(it) }
-
     Modules.App.unitTest.forEach { testImplementation(it) }
     Modules.App.androidTest.forEach { androidTestImplementation(it) }
     Modules.App.debugTest.forEach { debugImplementation(it) }
 
     Modules.App.libs.forEach { implementation(it) }
     Modules.App.kapts.forEach { kapt(it) }
+
+    configurations.all {
+        resolutionStrategy {
+            force ("xpp3:xpp3:1.1.4c")
+        }
+    }
+    configurations {
+        all {
+            exclude(group = "xpp3", module = "xpp3")
+        }
+    }
 
 }

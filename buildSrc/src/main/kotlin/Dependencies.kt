@@ -4,6 +4,10 @@ object Dependencies {
         const val coreKtx = "androidx.core:core-ktx:${Versions.AndroidX.coreKtx}"
         const val lifecycleKtx =
             "androidx.lifecycle:lifecycle-runtime-ktx:${Versions.AndroidX.lifecycleRuntimeKtx}"
+        const val lifecycleCore =
+            "androidx.lifecycle:lifecycle-runtime-ktx:${Versions.AndroidX.lifecycleRuntimeKtx}"
+        const val service =
+            "androidx.lifecycle:lifecycle-service:${Versions.AndroidX.lifecycleRuntimeKtx}"
         const val inject = "javax.inject:javax.inject:1"
         const val viewmodel =
             "androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.AndroidX.lifecycleRuntimeKtx}"
@@ -61,5 +65,14 @@ object Dependencies {
             "org.jetbrains.kotlinx:kotlinx-collections-immutable:${Versions.Collections.immutable}"
         const val json =
             "org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.Collections.json}"
+    }
+
+    object Xmpp {
+        const val smackAndroid = "org.igniterealtime.smack:smack-android:${Versions.Xmpp.smack}"
+        const val smackTcp = "org.igniterealtime.smack:smack-tcp:${Versions.Xmpp.smack}"
+        const val smackExt = "org.igniterealtime.smack:smack-extensions:${Versions.Xmpp.smack}"
+        const val conversations =
+            "eu.siacs.conversations:conversations:${Versions.Xmpp.conversation}"
+
     }
 }
