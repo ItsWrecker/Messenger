@@ -70,7 +70,7 @@ fun ConnectionScreen(navHostController: NavHostController) {
             } else if (valuePassword.isEmpty()) {
                 Toast.makeText(mContext, "Password is Empty", Toast.LENGTH_SHORT).show()
             } else {
-                navHostController.navigate(Destinations.ConversationScreen.route)
+                navHostController.navigate(Destinations.ProfileScreen.route)
             }
         }, modifier = Modifier.height(40.dp)) {
             Text("Submit")

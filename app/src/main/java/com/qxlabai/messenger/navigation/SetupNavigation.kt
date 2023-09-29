@@ -24,7 +24,7 @@ fun SetupNavigation(navHostController: NavHostController) {
             ConnectionScreen(navHostController = navHostController)
         }
 
-        composable(Destinations.ConnectionScreen.route){
+        composable(Destinations.ProfileScreen.route){
             ProfileScreen(navHostController = navHostController)
         }
     }
