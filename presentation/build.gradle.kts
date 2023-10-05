@@ -45,4 +45,5 @@ dependencies {
     Modules.Presentation.kapt.forEach {
         kapt(it)
     }
+    Modules.Presentation.xmpp.forEach { implementation(it) }
 }

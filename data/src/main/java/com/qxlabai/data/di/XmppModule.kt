@@ -1,5 +1,10 @@
 package com.qxlabai.data.di
 
+import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.core.DataStoreFactory
+import com.qxlabai.data.datastore.entiry.AppLock
+import com.qxlabai.data.datastore.serializer.AppLockSerializer
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -12,6 +17,7 @@ import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration
 import org.jivesoftware.smackx.iqregister.AccountManager
 import org.jxmpp.jid.DomainBareJid
 import org.jxmpp.jid.impl.JidCreate
+import java.io.File
 import java.net.InetAddress
 import javax.inject.Singleton
 
@@ -21,7 +27,7 @@ object XmppModule {
 
     private const val TIMEOUT = 45_000
     private const val serverAddress = "conversations.im"
-     private val xmppServiceDomain: DomainBareJid = JidCreate.domainBareFrom(serverAddress)
+    private val xmppServiceDomain: DomainBareJid = JidCreate.domainBareFrom(serverAddress)
     private const val port = 5222
 
     @Provides
@@ -56,5 +62,17 @@ object XmppModule {
     fun provideChatManger(
         connection: AbstractXMPPConnection
     ): ChatManager = ChatManager.getInstanceFor(connection)
+
+    @Provides
+    @Singleton
+    fun provideAppDataStore(
+        context: Context
+    ): DataStore<AppLock> {
+        return DataStoreFactory.create(
+            serializer = AppLockSerializer,
+            null,
+            produceFile = { File(context.cacheDir, "messenger.json") }
+        )
+    }
 
 }

@@ -15,7 +15,8 @@ object Modules {
             Dependencies.Compose.composePreview,
             Dependencies.Compose.composeMaterial,
             Dependencies.Compose.composeNavigation,
-            Dependencies.Compose.constraintLayout
+            Dependencies.Compose.constraintLayout,
+            Dependencies.Compose.hiltNavigation
         )
 
         val unitTest = listOf(
@@ -97,6 +98,12 @@ object Modules {
         val androidTest = listOf(
             Dependencies.AndroidTest.junitExt,
             Dependencies.AndroidTest.expressoCore
+        )
+        val xmpp = listOf(
+//            Dependencies.Xmpp.conversations,
+            Dependencies.Xmpp.smackAndroid,
+            Dependencies.Xmpp.smackExt,
+            Dependencies.Xmpp.smackTcp,
         )
     }
 

@@ -12,4 +12,6 @@ interface XmppRepository {
 
     suspend fun createAccount(username: String, passcode: String): Flow<Events<String>>
 
+    suspend fun getUserId(): Flow<Events<String>>
+
 }

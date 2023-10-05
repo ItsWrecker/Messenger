@@ -22,6 +22,7 @@ object Versions {
         const val composeBOM = "2023.03.00"
         const val constraintLayout = "1.0.1"
         const val navigation = "2.7.2"
+        const val hiltNavigation = "1.0.0"
     }
 
     object UnitTest {

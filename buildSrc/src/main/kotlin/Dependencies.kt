@@ -32,6 +32,7 @@ object Dependencies {
             "androidx.navigation:navigation-compose:${Versions.Compose.navigation}"
         const val constraintLayout =
             "androidx.constraintlayout:constraintlayout-compose:${Versions.Compose.constraintLayout}"
+        const val hiltNavigation = "androidx.hilt:hilt-navigation-compose:${Versions.Compose.hiltNavigation}"
     }
 
     object UnitTest {

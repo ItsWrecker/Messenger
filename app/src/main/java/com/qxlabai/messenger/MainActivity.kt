@@ -22,17 +22,12 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
-    private val viewModel by viewModels<XmppViewModel>()
-
     private lateinit var navHostController: NavHostController
+    private val viewModel by viewModels<XmppViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             navHostController = rememberNavController()
-
-            viewModel.bindService(this)
-            viewModel.processAction(XmppAction.Connect)
             MessengerTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
