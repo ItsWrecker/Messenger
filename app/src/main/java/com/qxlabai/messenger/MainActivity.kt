@@ -7,17 +7,12 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.qxlabai.messenger.navigation.SetupNavigation
-import com.qxlabai.messenger.screeens.Authentication
 import com.qxlabai.messenger.ui.theme.MessengerTheme
-import com.qxlabai.presentation.xmpp.XmppAction
-import com.qxlabai.presentation.xmpp.XmppViewModel
+import com.qxlabai.presentation.xmpp.connection.XmppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

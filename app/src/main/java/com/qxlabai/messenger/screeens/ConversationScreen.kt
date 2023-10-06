@@ -21,7 +21,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.List
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Send
-import androidx.compose.material.icons.twotone.Send
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -45,7 +44,6 @@ import androidx.navigation.NavHostController
 import com.qxlabai.messenger.R
 import com.qxlabai.messenger.components.SingleMassage
 import com.qxlabai.messenger.models.Message
-
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")

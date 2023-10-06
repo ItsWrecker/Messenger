@@ -110,7 +110,8 @@ object Modules {
     object Domain {
         val core = listOf(
             Dependencies.Coroutine.coroutine,
-            Dependencies.Core.inject
+            Dependencies.Core.inject,
+            Dependencies.Collections.json
         )
     }
 }

@@ -1,6 +1,7 @@
 plugins {
     id(Config.Plugins.javaLibrary)
     id(Config.Plugins.kotlinLibrary)
+    id(Config.Plugins.serialization)
 }
 
 java {

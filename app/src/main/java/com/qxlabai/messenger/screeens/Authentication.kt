@@ -2,20 +2,18 @@ package com.qxlabai.messenger.screeens
 
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -26,14 +24,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
-import androidx.compose.ui.window.SecureFlagPolicy
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.qxlabai.messenger.navigation.Destinations
-import com.qxlabai.presentation.xmpp.XmppAction
-import com.qxlabai.presentation.xmpp.XmppViewModel
+import com.qxlabai.presentation.xmpp.auth.AuthViewModel
+import com.qxlabai.presentation.xmpp.connection.XmppViewModel
+import com.qxlabai.presentation.xmpp.services.CredentialsParcel
 
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -41,23 +37,16 @@ import com.qxlabai.presentation.xmpp.XmppViewModel
 @Composable
 fun Authentication(navHostController: NavHostController) {
 
-    val viewModel = hiltViewModel<XmppViewModel>()
+    val viewModel = hiltViewModel<AuthViewModel>()
     val viewState = viewModel.viewState.collectAsState()
+    val context = LocalContext.current
 
-    if (viewModel.viewState.value.isConnectionEstablished.not()) {
-        navHostController.popBackStack()
-        return
-    }
-
-    if (viewModel.viewState.value.isAuthenticated) {
-        viewModel.processAction(XmppAction.FetchUserId)
-        navHostController.navigate(Destinations.ProfileScreen.route) {
+    if (viewState.value.isAuthenticated) {
+        Log.e("AUTH01", "Finished")
+        navHostController.navigate(Destinations.ProfileScreen.route){
             navHostController.popBackStack()
-            launchSingleTop = true
-            restoreState = false
         }
     } else {
-
         var valueUID by remember {
             mutableStateOf("")
         }
@@ -74,52 +63,43 @@ fun Authentication(navHostController: NavHostController) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            val isError = viewState.value.error.isNullOrEmpty()
             OutlinedTextField(
-                value = valueUID,
+                value = viewState.value.uuid,
                 onValueChange = { newText ->
-                    valueUID = newText
-                    isValid = newText.isNotEmpty() // Add your custom validation rules here
-
+                    viewModel.updateUUID(newText)
                 },
                 label = {
-                    Text(if (isError) "Please Enter UID" else "Please Enter UID")
+                    Text("Please Enter UID")
                 },
-                isError = isError
             )
             Spacer(modifier = Modifier.height(20.dp))
 
             OutlinedTextField(
-                value = valuePassword,
+                value = viewState.value.passcode,
                 onValueChange = { newText ->
-                    valuePassword = newText
-                    isValid = newText.isNotEmpty() // Add your custom validation rules here
-
+                    viewModel.updatePasscode(newText)
                 },
                 label = {
-                    Text(if (isError) "Please Enter correct passcode" else "Please Enter Password")
+                    Text("Please Enter Password")
                 },
-                isError = isError
             )
 
             Spacer(modifier = Modifier.height(40.dp))
             OutlinedButton(onClick = {
-                if (valueUID.isEmpty()) {
+                if (viewState.value.uuid.isEmpty()) {
                     Toast.makeText(mContext, "UID is Empty", Toast.LENGTH_SHORT).show()
-                } else if (valuePassword.isEmpty()) {
+                } else if (viewState.value.passcode.isEmpty()) {
                     Toast.makeText(mContext, "Password is Empty", Toast.LENGTH_SHORT).show()
                 } else {
-                    viewModel.processAction(
-                        XmppAction.Authenticate(
-                            valueUID,
-                            valuePassword
-                        )
+                    viewModel.authenticate(
+                        context = context
                     )
                 }
 
             }, modifier = Modifier.height(40.dp)) {
                 Text("Submit")
             }
+
         }
     }
 }

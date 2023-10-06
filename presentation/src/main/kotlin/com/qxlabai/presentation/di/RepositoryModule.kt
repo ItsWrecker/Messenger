@@ -1,8 +1,10 @@
 package com.qxlabai.presentation.di
 
 import com.qxlabai.data.datastore.repository.AppLockRepositoryImpl
+import com.qxlabai.data.datastore.repository.CredentialsRepositoryImpl
 import com.qxlabai.data.xmpp.XmppRepositoryImpl
 import com.qxlabai.domain.repositories.AppLockRepository
+import com.qxlabai.domain.repositories.CredentialsRepository
 import com.qxlabai.domain.repositories.XmppRepository
 import dagger.Binds
 import dagger.Module
@@ -27,4 +29,9 @@ interface RepositoryModule {
     ): XmppRepository
 
 
+    @Binds
+    @Singleton
+    fun bindsCredentialRepository(
+        impl: CredentialsRepositoryImpl
+    ): CredentialsRepository
 }

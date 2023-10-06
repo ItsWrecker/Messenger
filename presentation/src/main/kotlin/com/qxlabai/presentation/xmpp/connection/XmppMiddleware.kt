@@ -1,4 +1,4 @@
-package com.qxlabai.presentation.xmpp
+package com.qxlabai.presentation.xmpp.connection
 
 import android.util.Log
 import com.qxlabai.domain.events.Events
@@ -34,6 +34,7 @@ class XmppMiddleware @Inject constructor(
             else -> Unit
         }
     }
+
 
     private suspend fun fetchUserId(store: Store<XmppState, XmppAction>) {
 
@@ -108,4 +109,6 @@ class XmppMiddleware @Inject constructor(
             store.dispatch(XmppAction.OnFailure(XmppAction.STAGE.CONNECTION))
         }
     }
+
+
 }

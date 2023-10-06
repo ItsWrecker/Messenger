@@ -1,7 +1,8 @@
-package com.qxlabai.presentation.xmpp
+package com.qxlabai.presentation.xmpp.connection
 
 import android.content.Context
 import com.qxlabai.presentation.core.Action
+import org.jivesoftware.smack.XMPPConnection
 
 sealed interface XmppAction : Action {
 
@@ -23,5 +24,24 @@ sealed interface XmppAction : Action {
 
     data class Processing(val message: String) : XmppAction
     object FetchUserId : XmppAction
-    data class OnUserId(val userId: String): XmppAction
+    data class OnUserId(val userId: String) : XmppAction
+
+    object ServiceStart: XmppAction
+    object ServiceReady: XmppAction
+    data class Connecting(
+        val connection: XMPPConnection
+    ) : XmppAction
+    data class Connected(
+        val connection: XMPPConnection
+    ) : XmppAction
+
+    data class Authenticated(
+        val connection: XMPPConnection,
+        val isResumed: Boolean
+    ) : XmppAction
+
+    object ConnectionClosed : XmppAction
+    data class ConnectionError(
+        val error: Exception
+    ) : XmppAction
 }

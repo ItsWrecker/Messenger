@@ -5,6 +5,8 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
 import com.qxlabai.data.datastore.entiry.AppLock
 import com.qxlabai.data.datastore.serializer.AppLockSerializer
+import com.qxlabai.data.datastore.serializer.CredentialSerializer
+import com.qxlabai.domain.interactors.xmpp.entity.Credentials
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -72,6 +74,18 @@ object XmppModule {
             serializer = AppLockSerializer,
             null,
             produceFile = { File(context.cacheDir, "messenger.json") }
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideCredentialsStore(
+        context: Context
+    ): DataStore<Credentials> {
+        return DataStoreFactory.create(
+            serializer = CredentialSerializer,
+            null,
+            produceFile = { File(context.cacheDir, "credentials.json") }
         )
     }
 

@@ -19,19 +19,19 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.qxlabai.messenger.navigation.Destinations
-import com.qxlabai.presentation.xmpp.XmppAction
-import com.qxlabai.presentation.xmpp.XmppViewModel
+import com.qxlabai.presentation.xmpp.connection.XmppViewModel
 
 @Composable
 fun ConnectionScreen(navHostController: NavHostController) {
     val xmppViewModel = hiltViewModel<XmppViewModel>()
+    val context = LocalContext.current
     val viewState = xmppViewModel.viewState.collectAsState()
 
-    if (viewState.value.isConnectionEstablished)  navHostController.navigate(Destinations.AuthenticationScreen.route) {
+    if (viewState.value.isConnectionEstablished) navHostController.navigate(Destinations.AuthenticationScreen.route) {
         navHostController.popBackStack()
         launchSingleTop = true
         restoreState = false
-    } else xmppViewModel.processAction(XmppAction.Connect)
+    } else xmppViewModel.bindService(context)
 
     Surface(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -45,7 +45,7 @@ fun ConnectionScreen(navHostController: NavHostController) {
                     .progressSemantics()
             )
             Spacer(modifier = Modifier.height(32.dp))
-            Text(text = viewState.value.status)
+            Text(text = viewState.value.progressMessage.toString())
         }
         return@Surface
     }
