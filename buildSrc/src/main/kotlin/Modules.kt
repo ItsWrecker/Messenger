@@ -6,7 +6,8 @@ object Modules {
         val core = listOf(
             Dependencies.Core.coreKtx,
             Dependencies.Core.lifecycleKtx,
-            Dependencies.Coroutine.coroutine
+            Dependencies.Coroutine.coroutine,
+            Dependencies.Kotlin.dateTime
         )
         val compose = listOf(
             Dependencies.Compose.composeActivity,
@@ -38,6 +39,11 @@ object Modules {
         val kapts = listOf(
             Dependencies.Hilt.hiltCompiler
         )
+        val xmpp = listOf(
+            Dependencies.Xmpp.smackAndroid,
+            Dependencies.Xmpp.smackExt,
+            Dependencies.Xmpp.smackTcp,
+        )
 
     }
 
@@ -48,7 +54,9 @@ object Modules {
         )
 
         val local = listOf(
-            Dependencies.Local.dataStore
+            Dependencies.Local.dataStore,
+            Dependencies.Local.roomCore,
+            Dependencies.Local.roomKtx
         )
         val collections = listOf(
             Dependencies.Collections.immutable,
@@ -69,11 +77,16 @@ object Modules {
             Dependencies.Xmpp.smackTcp,
         )
 
+        val kotlin = listOf(
+            Dependencies.Kotlin.dateTime
+        )
+
         val libs = listOf(
             Dependencies.Hilt.hiltCore
         )
         val kapt = listOf(
-            Dependencies.Hilt.hiltCompiler
+            Dependencies.Hilt.hiltCompiler,
+            Dependencies.Local.roomCompiler
         )
     }
 
@@ -87,7 +100,8 @@ object Modules {
             Dependencies.Core.service
         )
         val libs = listOf(
-            Dependencies.Hilt.hiltCore
+            Dependencies.Hilt.hiltCore,
+            Dependencies.Kotlin.dateTime
         )
         val kapt = listOf(
             Dependencies.Hilt.hiltCompiler
@@ -111,7 +125,8 @@ object Modules {
         val core = listOf(
             Dependencies.Coroutine.coroutine,
             Dependencies.Core.inject,
-            Dependencies.Collections.json
+            Dependencies.Collections.json,
+            Dependencies.Kotlin.dateTime
         )
     }
 }

@@ -1,5 +1,6 @@
 package com.qxlabai.presentation.di
 
+import android.app.NotificationManager
 import android.content.Context
 import dagger.Module
 import dagger.Provides
@@ -17,4 +18,6 @@ object AppModule {
     fun provideAppContext(
         @ApplicationContext context: Context
     ): Context = context
+
+
 }

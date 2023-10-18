@@ -6,6 +6,8 @@ import com.qxlabai.data.xmpp.XmppRepositoryImpl
 import com.qxlabai.domain.repositories.AppLockRepository
 import com.qxlabai.domain.repositories.CredentialsRepository
 import com.qxlabai.domain.repositories.XmppRepository
+import com.qxlabai.presentation.notification.NotificationRepository
+import com.qxlabai.presentation.notification.NotificationRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -34,4 +36,11 @@ interface RepositoryModule {
     fun bindsCredentialRepository(
         impl: CredentialsRepositoryImpl
     ): CredentialsRepository
+
+    @Binds
+    @Singleton
+    fun bindsNotificationManager(
+        impl: NotificationRepositoryImpl
+    ): NotificationRepository
+
 }

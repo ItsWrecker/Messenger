@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = Config.namespace
+    namespace = "com.qxlabai.presentation"
     compileSdk = Config.Android.androidCompileSdkVersion
 
     defaultConfig {
@@ -38,6 +38,7 @@ android {
 dependencies {
     implementation(project(":domain"))
     implementation(project(":data"))
+    implementation("androidx.navigation:navigation-common-ktx:2.7.4")
     Modules.Presentation.core.forEach { implementation(it) }
     Modules.Presentation.unitTest.forEach { implementation(it) }
     Modules.Presentation.androidTest.forEach { androidTestImplementation(it) }

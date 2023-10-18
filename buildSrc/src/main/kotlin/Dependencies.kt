@@ -32,7 +32,8 @@ object Dependencies {
             "androidx.navigation:navigation-compose:${Versions.Compose.navigation}"
         const val constraintLayout =
             "androidx.constraintlayout:constraintlayout-compose:${Versions.Compose.constraintLayout}"
-        const val hiltNavigation = "androidx.hilt:hilt-navigation-compose:${Versions.Compose.hiltNavigation}"
+        const val hiltNavigation =
+            "androidx.hilt:hilt-navigation-compose:${Versions.Compose.hiltNavigation}"
     }
 
     object UnitTest {
@@ -59,6 +60,9 @@ object Dependencies {
 
     object Local {
         const val dataStore = "androidx.datastore:datastore:${Versions.Local.dataStore}"
+        const val roomCore = "androidx.room:room-runtime:${Versions.Local.room}"
+        const val roomKtx = "androidx.room:room-ktx:${Versions.Local.room}"
+        const val roomCompiler = "androidx.room:room-compiler:${Versions.Local.room}"
     }
 
     object Collections {
@@ -75,5 +79,9 @@ object Dependencies {
         const val conversations =
             "eu.siacs.conversations:conversations:${Versions.Xmpp.conversation}"
 
+    }
+
+    object Kotlin {
+        const val dateTime = "org.jetbrains.kotlinx:kotlinx-datetime:${Versions.Kotlin.dateTime}"
     }
 }

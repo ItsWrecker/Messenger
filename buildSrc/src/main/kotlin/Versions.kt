@@ -36,6 +36,7 @@ object Versions {
 
     object Local {
         const val dataStore = "1.0.0"
+        const val room = "2.5.2"
     }
 
     object Collections {
@@ -48,6 +49,11 @@ object Versions {
     object Xmpp {
         const val smack = "4.4.6"
         const val conversation = "2.8.8.3"
+
+    }
+
+    object Kotlin {
+        const val dateTime = "0.4.1"
 
     }
 

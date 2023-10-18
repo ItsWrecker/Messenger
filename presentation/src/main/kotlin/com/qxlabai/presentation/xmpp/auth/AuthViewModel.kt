@@ -9,11 +9,13 @@ import android.os.Bundle
 import android.os.IBinder
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.qxlabai.domain.entity.Account
 import com.qxlabai.presentation.core.Store
 import com.qxlabai.presentation.xmpp.services.XmppService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -44,6 +46,16 @@ class AuthViewModel @Inject constructor(
         })
         store.dispatch(AuthAction.Authenticate)
     }
+
+//    fun login(jid: String, password: String) {
+//        val account = Account.create(jid, password)
+//        _uiState.update { AuthUiState.Loading }
+//        viewModelScope.launch {
+//            preferencesRepository.updateAccount(account)
+//
+//            checkForAccountStatusChanges()
+//        }
+//    }
 
 
 }

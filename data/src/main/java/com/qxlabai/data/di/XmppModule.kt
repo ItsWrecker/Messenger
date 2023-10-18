@@ -4,8 +4,10 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
 import com.qxlabai.data.datastore.entiry.AppLock
+import com.qxlabai.data.datastore.entiry.Preferences
 import com.qxlabai.data.datastore.serializer.AppLockSerializer
 import com.qxlabai.data.datastore.serializer.CredentialSerializer
+import com.qxlabai.data.datastore.serializer.PreferencesSerializer
 import com.qxlabai.domain.interactors.xmpp.entity.Credentials
 import dagger.Module
 import dagger.Provides
@@ -89,4 +91,16 @@ object XmppModule {
         )
     }
 
+
+    @Provides
+    @Singleton
+    fun providePreferenceStore(
+        context: Context
+    ): DataStore<Preferences> {
+        return DataStoreFactory.create(
+            serializer = PreferencesSerializer,
+            null,
+            produceFile = { File(context.cacheDir, "preferences.json") }
+        )
+    }
 }

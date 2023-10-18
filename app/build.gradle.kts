@@ -54,6 +54,7 @@ android {
 
 dependencies {
     implementation(project(":presentation"))
+    implementation(project(":domain"))
     Modules.App.composeBOM.let { implementation(platform(it)) }
     Modules.App.core.forEach { implementation(it) }
     Modules.App.compose.forEach { implementation(it) }
@@ -63,10 +64,11 @@ dependencies {
 
     Modules.App.libs.forEach { implementation(it) }
     Modules.App.kapts.forEach { kapt(it) }
+    Modules.App.xmpp.forEach { implementation(it) }
 
     configurations.all {
         resolutionStrategy {
-            force ("xpp3:xpp3:1.1.4c")
+            force("xpp3:xpp3:1.1.4c")
         }
     }
     configurations {

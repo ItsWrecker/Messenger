@@ -4,7 +4,6 @@ plugins {
     id(Config.Plugins.serialization)
     kotlin(Config.Plugins.kapt)
     id(Config.Plugins.hilt)
-
 }
 
 android {
@@ -45,9 +44,13 @@ dependencies {
     Modules.Data.xmpp.forEach {
         implementation(it)
     }
+    Modules.Data.kotlin.forEach {
+        implementation(it)
+    }
     Modules.Data.androidTest.forEach { androidTestImplementation(it) }
     Modules.Data.libs.forEach { implementation(it) }
     Modules.Data.kapt.forEach {
         kapt(it)
     }
+
 }

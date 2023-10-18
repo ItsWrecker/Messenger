@@ -5,6 +5,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.graphics.Color
 import dagger.hilt.android.HiltAndroidApp
+import org.jivesoftware.smack.android.AndroidSmackInitializer
 
 @HiltAndroidApp
 class BaseApplication : Application() {
@@ -12,6 +13,7 @@ class BaseApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
+        AndroidSmackInitializer.initialize(this)
     }
 
 
