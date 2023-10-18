@@ -129,4 +129,30 @@ object Modules {
             Dependencies.Kotlin.dateTime
         )
     }
+
+    object Common {
+        val libs = listOf(
+            Dependencies.Kotlin.dateTime,
+            Dependencies.Coroutine.coroutine,
+            Dependencies.Hilt.hiltCore
+        )
+        val kapt = listOf(
+            Dependencies.Hilt.hiltCompiler
+        )
+    }
+
+    object Model {
+        val libs = listOf(
+            Dependencies.Kotlin.dateTime
+        )
+    }
+
+    object DesignSystem {
+        val compose = listOf(
+            Dependencies.Core.coreKtx,
+            Dependencies.Core.lifecycleKtx,
+            Dependencies.Compose.composeUI,
+            Dependencies.Compose.composeGraphics,
+        )
+    }
 }

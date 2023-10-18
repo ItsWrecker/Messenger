@@ -1,8 +1,9 @@
 pluginManagement {
+    includeBuild("build-logic")
     repositories {
+        gradlePluginPortal()
         google()
         mavenCentral()
-        gradlePluginPortal()
     }
 }
 dependencyResolutionManagement {
@@ -11,11 +12,23 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
     }
-
 }
-
 rootProject.name = "Messenger"
 include(":app")
-include(":domain")
-include(":data")
-include(":presentation")
+include(":core-common")
+include(":core-model")
+include(":core-data")
+include(":core-database")
+include(":core-datastore")
+include(":core-navigation")
+include(":core-designsystem")
+include(":core-ui")
+include(":core-xmpp")
+include(":core-testing")
+include(":service-xmpp")
+include(":feature-router")
+include(":feature-auth")
+include(":feature-conversations")
+include(":feature-chat")
+include(":feature-contacts")
+include(":feature-settings")
