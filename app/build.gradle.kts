@@ -40,18 +40,13 @@ android {
 }
 
 dependencies {
-    implementation(project(":feature-router"))
-    implementation(project(":feature-auth"))
-    implementation(project(":feature-conversations"))
-    implementation(project(":feature-chat"))
-    implementation(project(":feature-contacts"))
-    implementation(project(":feature-settings"))
-    implementation(project(":service-xmpp"))
-
-    implementation(project(":core-designsystem"))
-    implementation(project(":core-navigation"))
-    implementation(project(":core-data"))
-    implementation(project(":core-model"))
+    api(project(":features"))
+    api(project(":core"))
+    implementation(project(":service:xmpp"))
+    implementation(project(":core:design"))
+    implementation(project(":core:navigation"))
+    implementation(project(":core:data"))
+    implementation(project(":core:model"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.core.splashscreen)

@@ -27,23 +27,25 @@
             <option value="$PROJECT_DIR$/build-logic" />
             <option value="$PROJECT_DIR$/build-logic/convention" />
             <option value="$PROJECT_DIR$/buildSrc" />
-            <option value="$PROJECT_DIR$/core-common" />
-            <option value="$PROJECT_DIR$/core-data" />
-            <option value="$PROJECT_DIR$/core-database" />
-            <option value="$PROJECT_DIR$/core-datastore" />
-            <option value="$PROJECT_DIR$/core-designsystem" />
-            <option value="$PROJECT_DIR$/core-model" />
-            <option value="$PROJECT_DIR$/core-navigation" />
-            <option value="$PROJECT_DIR$/core-testing" />
-            <option value="$PROJECT_DIR$/core-ui" />
-            <option value="$PROJECT_DIR$/core-xmpp" />
-            <option value="$PROJECT_DIR$/feature-auth" />
-            <option value="$PROJECT_DIR$/feature-chat" />
-            <option value="$PROJECT_DIR$/feature-contacts" />
-            <option value="$PROJECT_DIR$/feature-conversations" />
-            <option value="$PROJECT_DIR$/feature-router" />
-            <option value="$PROJECT_DIR$/feature-settings" />
-            <option value="$PROJECT_DIR$/service-xmpp" />
+            <option value="$PROJECT_DIR$/core" />
+            <option value="$PROJECT_DIR$/core/common" />
+            <option value="$PROJECT_DIR$/core/data" />
+            <option value="$PROJECT_DIR$/core/database" />
+            <option value="$PROJECT_DIR$/core/datastore" />
+            <option value="$PROJECT_DIR$/core/design" />
+            <option value="$PROJECT_DIR$/core/model" />
+            <option value="$PROJECT_DIR$/core/navigation" />
+            <option value="$PROJECT_DIR$/core/ui" />
+            <option value="$PROJECT_DIR$/core/xmpp" />
+            <option value="$PROJECT_DIR$/features" />
+            <option value="$PROJECT_DIR$/features/auth" />
+            <option value="$PROJECT_DIR$/features/chat" />
+            <option value="$PROJECT_DIR$/features/contacts" />
+            <option value="$PROJECT_DIR$/features/conversations" />
+            <option value="$PROJECT_DIR$/features/router" />
+            <option value="$PROJECT_DIR$/features/settings" />
+            <option value="$PROJECT_DIR$/service" />
+            <option value="$PROJECT_DIR$/service/xmpp" />
           </set>
         </option>
       </GradleProjectSettings>
