@@ -14,8 +14,13 @@ import kotlinx.coroutines.withContext
 import org.jivesoftware.smack.ReconnectionManager
 import org.jivesoftware.smack.ReconnectionManager.ReconnectionPolicy.FIXED_DELAY
 import org.jivesoftware.smack.SmackException
+import org.jivesoftware.smack.filter.IQTypeFilter
+import org.jivesoftware.smack.packet.IQ
 import org.jivesoftware.smack.tcp.XMPPTCPConnection
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration
+import org.jivesoftware.smackx.iqregister.AccountManager
+import org.jivesoftware.smackx.iqregister.packet.Registration
+import org.jxmpp.jid.parts.Localpart
 import org.jxmpp.jid.parts.Resourcepart
 
 private const val TAG = "XmppManagerImpl"
@@ -61,7 +66,49 @@ class XmppManagerImpl @Inject constructor(
     }
 
     override suspend fun register(account: Account) {
-        TODO("Not yet implemented")
+        this.account = account
+        xmppConnection = account.register(
+            configurationBuilder = ::getConfiguration,
+            connectionBuilder = ::XMPPTCPConnection,
+            connectionListener = ::addConnectionListener
+        )
+    }
+
+    private fun Account.register(
+        configurationBuilder: (Account) -> XMPPTCPConnectionConfiguration,
+        connectionBuilder: (XMPPTCPConnectionConfiguration) -> XMPPTCPConnection,
+        connectionListener: (XMPPTCPConnection) -> Unit,
+    ): XMPPTCPConnection {
+        val configuration = configurationBuilder(this)
+        val connection = connectionBuilder(configuration)
+        connectionListener(connection)
+
+
+//        val registration = Registration()
+//        registration.type = IQ.Type.set
+//        registration.to = connection.xmppServiceDomain
+//        registration.attributes["username"] = "this.localPart"
+//        registration.attributes["password"] = "this.password"
+//        Log.e(TAG, registration.attributes.toString())
+//
+//       try {
+//           connection.sendStanza(registration)
+//
+//
+//           connection.addAsyncStanzaListener({ packet ->
+//               if (packet is IQ) {
+//                   if (packet.type == IQ.Type.result) {
+//                       Log.e(TAG, packet.toString())
+//                   } else if (packet.type == IQ.Type.error) {
+//                       Log.d(TAG, packet.error.toString())
+//                   }
+//               }
+//           }, IQTypeFilter.SET)
+//       }catch (exception: Exception){
+//           Log.e(TAG, exception.message, exception)
+//       }
+
+        return connection
     }
 
     private suspend fun Account.login(

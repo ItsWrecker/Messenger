@@ -156,12 +156,12 @@ fun AuthScreen(
         LoginButton(
             uiState = uiState,
             onClick = {
-                jidHasError = !jid.isValidJid
-                passwordHasError = password.isEmpty()
-                if (!jidHasError && !passwordHasError) {
-                    onLoginClick(jid, password)
-                    focusManager.clearFocus()
-                }
+                onLoginClick(jid, password)
+//                jidHasError = !jid.isValidJid
+//                passwordHasError = password.isEmpty()
+//                if (!jidHasError && !passwordHasError) {
+//                    focusManager.clearFocus()
+//                }
             },
             enabled = uiState != Loading,
         )

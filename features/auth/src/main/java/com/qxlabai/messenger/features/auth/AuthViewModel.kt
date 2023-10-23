@@ -37,6 +37,7 @@ class AuthViewModel @Inject constructor(
         }
     }
 
+
     private suspend fun checkForAccountStatusChanges() {
         preferencesRepository.getAccount().collect { account ->
             when (account.status) {

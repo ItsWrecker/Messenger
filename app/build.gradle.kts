@@ -41,7 +41,7 @@ android {
 
 dependencies {
     api(project(":features"))
-    api(project(":core"))
+//    api(project(":core"))
     implementation(project(":service:xmpp"))
     implementation(project(":core:design"))
     implementation(project(":core:navigation"))
