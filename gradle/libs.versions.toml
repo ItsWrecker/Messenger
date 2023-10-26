@@ -35,6 +35,8 @@ turbine = "0.9.0"
 junit = "1.1.5"
 appcompat = "1.6.1"
 material = "1.10.0"
+serialization = "1.6.0"
+
 
 [libraries]
 accompanist-systemuicontroller = { group = "com.google.accompanist", name = "accompanist-systemuicontroller", version.ref = "accompanist" }
@@ -90,7 +92,7 @@ spotless-gradlePlugin = { group = "com.diffplug.spotless", name = "spotless-plug
 junit = { group = "androidx.test.ext", name = "junit", version.ref = "junit" }
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
-
+serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-protobuf", version.ref = "serialization"}
 [plugins]
 protobuf = { id = "com.google.protobuf", version.ref = "protobufPlugin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

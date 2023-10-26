@@ -27,10 +27,11 @@ class DialoguePreferencesDataSource @Inject constructor(
     suspend fun updateConnectionStatus(connectionStatus: PreferencesConnectionStatus) {
         try {
             userPreferences.updateData { currentPreferences ->
-                currentPreferences.copy {
-                    connectionAvailability = connectionStatus.availability
+
+                currentPreferences.copy(
+                    connectionAvailability = connectionStatus.availability,
                     connectionAuthenticated = connectionStatus.authenticated
-                }
+                )
             }
         } catch (ioException: IOException) {
             Log.e("DialoguePreferences", "Failed to update user preferences", ioException)
@@ -55,13 +56,13 @@ class DialoguePreferencesDataSource @Inject constructor(
     suspend fun updateAccount(account: PreferencesAccount) {
         try {
             userPreferences.updateData { currentPreferences ->
-                currentPreferences.copy {
-                    accountJid = account.jid
-                    accountLocalPart = account.localPart
-                    accountDomainPart = account.domainPart
-                    accountPassword = account.password
+                currentPreferences.copy (
+                    accountJid = account.jid,
+                    accountLocalPart = account.localPart,
+                    accountDomainPart = account.domainPart,
+                    accountPassword = account.password,
                     accountStatus = account.status
-                }
+                )
             }
         } catch (ioException: IOException) {
             Log.e("DialoguePreferences", "Failed to update user preferences", ioException)
@@ -83,10 +84,10 @@ class DialoguePreferencesDataSource @Inject constructor(
     suspend fun updateThemeConfig(themeConfig: PreferencesThemeConfig) {
         try {
             userPreferences.updateData { currentPreferences ->
-                currentPreferences.copy {
-                    themeBranding = themeConfig.themeBranding
+                currentPreferences.copy (
+                    themeBranding = themeConfig.themeBranding,
                     darkConfig = themeConfig.darkConfig
-                }
+                )
             }
         } catch (ioException: IOException) {
             Log.e("DialoguePreferences", "Failed to update user preferences", ioException)

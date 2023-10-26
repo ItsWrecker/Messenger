@@ -1,7 +1,4 @@
-import com.google.protobuf.gradle.builtins
-import com.google.protobuf.gradle.generateProtoTasks
-import com.google.protobuf.gradle.protobuf
-import com.google.protobuf.gradle.protoc
+
 
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
@@ -9,7 +6,8 @@ plugins {
     id("android.library.jacoco")
     kotlin("kapt")
     id("dagger.hilt.android.plugin")
-    alias(libs.plugins.protobuf)
+//    alias(libs.plugins.protobuf)
+    id ("org.jetbrains.kotlin.plugin.serialization")
 }
 
 android {
@@ -19,23 +17,23 @@ android {
 }
 
 // Setup protobuf configuration
-protobuf {
-    protoc {
-        artifact = libs.protobuf.protoc.get().toString()
-    }
-    generateProtoTasks {
-        all().forEach { task ->
-            task.builtins {
-                val java by registering {
-                    option("lite")
-                }
-                val kotlin by registering {
-                    option("lite")
-                }
-            }
-        }
-    }
-}
+//protobuf {
+//    protoc {
+//        artifact = libs.protobuf.protoc.get().toString()
+//    }
+//    generateProtoTasks {
+//        all().forEach { task ->
+//            task.builtins {
+//                val java by registering {
+//                    option("lite")
+//                }
+//                val kotlin by registering {
+//                    option("lite")
+//                }
+//            }
+//        }
+//    }
+//}
 
 kapt {
     correctErrorTypes = true
@@ -44,15 +42,18 @@ kapt {
 dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:model"))
+    implementation(project(":service:encrypt"))
 
     implementation(libs.kotlinx.coroutines.android)
 
     implementation(libs.androidx.dataStore.core)
     implementation(libs.protobuf.kotlin.lite)
+//    implementation(libs.serialization)
 
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
 
     testImplementation(libs.junit4)
     testImplementation(libs.kotlinx.coroutines.test)
+    implementation ("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
 }

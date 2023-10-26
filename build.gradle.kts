@@ -3,6 +3,9 @@ buildscript {
         google()
         mavenCentral()
     }
+    dependencies {
+        classpath ("org.jetbrains.kotlin:kotlin-serialization:1.7.0")
+    }
 
     dependencies {
         classpath(libs.android.gradlePlugin)
