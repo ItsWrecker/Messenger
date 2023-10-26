@@ -8,11 +8,13 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import com.qxlabai.messenger.core.database.MessengerDatabase
+import net.sqlcipher.database.SupportFactory
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
+    private const val PASSPHRASE = "passcode"
     @Provides
     @Singleton
     fun providesDialogDatabase(
@@ -20,6 +22,7 @@ object DatabaseModule {
     ): MessengerDatabase = Room.databaseBuilder(
         context,
         MessengerDatabase::class.java,
-        "dialogue-database"
-    ).build()
+        "messenger.encrypted.db"
+    ).openHelperFactory(SupportFactory(PASSPHRASE.toByteArray()))
+        .build()
 }
