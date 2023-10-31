@@ -1,5 +1,6 @@
 package com.qxlabai.messenger.service.xmpp
 
+import android.content.Context
 import android.util.Log
 import com.qxlabai.messenger.core.model.data.Account
 import com.qxlabai.messenger.core.model.data.AccountStatus.Online
@@ -7,20 +8,27 @@ import com.qxlabai.messenger.core.model.data.AccountStatus.ServerNotFound
 import com.qxlabai.messenger.core.model.data.AccountStatus.Unauthorized
 import com.qxlabai.messenger.core.model.data.ConnectionStatus
 import com.qxlabai.messenger.core.data.repository.PreferencesRepository
+import com.qxlabai.messenger.service.xmpp.omemo.EphemeralTrustCallback
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
+import org.jivesoftware.smack.ConnectionConfiguration
 import org.jivesoftware.smack.ReconnectionManager
 import org.jivesoftware.smack.ReconnectionManager.ReconnectionPolicy.FIXED_DELAY
 import org.jivesoftware.smack.SmackException
-import org.jivesoftware.smack.filter.IQTypeFilter
-import org.jivesoftware.smack.packet.IQ
+import org.jivesoftware.smack.packet.Message
+import org.jivesoftware.smack.packet.Stanza
 import org.jivesoftware.smack.tcp.XMPPTCPConnection
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration
-import org.jivesoftware.smackx.iqregister.AccountManager
-import org.jivesoftware.smackx.iqregister.packet.Registration
-import org.jxmpp.jid.parts.Localpart
+import org.jivesoftware.smackx.carbons.packet.CarbonExtension
+import org.jivesoftware.smackx.omemo.OmemoConfiguration
+import org.jivesoftware.smackx.omemo.OmemoManager
+import org.jivesoftware.smackx.omemo.OmemoMessage
+import org.jivesoftware.smackx.omemo.listener.OmemoMessageListener
+import org.jivesoftware.smackx.omemo.signal.SignalCachingOmemoStore
+import org.jivesoftware.smackx.omemo.signal.SignalFileBasedOmemoStore
+import org.jivesoftware.smackx.omemo.signal.SignalOmemoService
 import org.jxmpp.jid.parts.Resourcepart
 
 private const val TAG = "XmppManagerImpl"
@@ -29,8 +37,9 @@ class XmppManagerImpl @Inject constructor(
     private val rosterManager: RosterManager,
     private val messageManager: MessageManager,
     private val preferencesRepository: PreferencesRepository,
-    private val ioDispatcher: CoroutineDispatcher
-) : XmppManager {
+    private val ioDispatcher: CoroutineDispatcher,
+    private val context: Context
+) : XmppManager, OmemoManager.InitializationFinishedCallback {
 
     private var xmppConnection: XMPPTCPConnection? = null
 
@@ -38,7 +47,21 @@ class XmppManagerImpl @Inject constructor(
 
     private val connectionListener = SimpleConnectionListener()
 
+    private lateinit var omemoManager: OmemoManager
+    private lateinit var signaleOmemoService: SignalOmemoService
+
     override suspend fun initialize() {
+
+
+        try {
+            signaleOmemoService = SignalOmemoService.getInstance() as SignalOmemoService
+            signaleOmemoService.omemoStoreBackend =
+                SignalCachingOmemoStore(SignalFileBasedOmemoStore(context.filesDir))
+            OmemoConfiguration.setAddOmemoHintBody(false)
+        } catch (exception: Exception) {
+            exception.printStackTrace()
+        }
+
         if (xmppConnection == null) {
             preferencesRepository.updateConnectionStatus(ConnectionStatus())
 
@@ -82,33 +105,35 @@ class XmppManagerImpl @Inject constructor(
         val configuration = configurationBuilder(this)
         val connection = connectionBuilder(configuration)
         connectionListener(connection)
-
-
-//        val registration = Registration()
-//        registration.type = IQ.Type.set
-//        registration.to = connection.xmppServiceDomain
-//        registration.attributes["username"] = "this.localPart"
-//        registration.attributes["password"] = "this.password"
-//        Log.e(TAG, registration.attributes.toString())
-//
-//       try {
-//           connection.sendStanza(registration)
-//
-//
-//           connection.addAsyncStanzaListener({ packet ->
-//               if (packet is IQ) {
-//                   if (packet.type == IQ.Type.result) {
-//                       Log.e(TAG, packet.toString())
-//                   } else if (packet.type == IQ.Type.error) {
-//                       Log.d(TAG, packet.error.toString())
-//                   }
-//               }
-//           }, IQTypeFilter.SET)
-//       }catch (exception: Exception){
-//           Log.e(TAG, exception.message, exception)
-//       }
-
         return connection
+    }
+
+    private val omemoMessageListener = object : OmemoMessageListener {
+        override fun onOmemoMessageReceived(
+            stanza: Stanza?,
+            decryptedMessage: OmemoMessage.Received?
+        ) {
+            Log.e(TAG, "Received")
+            Log.e(TAG, "${decryptedMessage?.body}")
+            try {
+                messageManager.handleIncomingMessage(
+                    stanza,
+                    decryptedMessage
+                )
+            }catch (exception: Exception){
+                exception.printStackTrace()
+            }
+        }
+
+        override fun onOmemoCarbonCopyReceived(
+            direction: CarbonExtension.Direction?,
+            carbonCopy: Message?,
+            wrappingMessage: Message?,
+            decryptedCarbonCopy: OmemoMessage.Received?
+        ) {
+            Log.e(TAG, "message")
+        }
+
     }
 
     private suspend fun Account.login(
@@ -118,7 +143,6 @@ class XmppManagerImpl @Inject constructor(
         successHandler: suspend Account.(XMPPTCPConnection) -> XMPPTCPConnection,
         failureHandler: suspend Account.(Throwable?) -> Unit
     ): XMPPTCPConnection? {
-
         val configuration = configurationBuilder(this)
         val connection = connectionBuilder(configuration)
 
@@ -127,6 +151,14 @@ class XmppManagerImpl @Inject constructor(
         val result = connection.connectAndLogin()
 
         return if (result.isSuccess) {
+
+            if (connection.isAuthenticated) {
+                omemoManager.purgeDeviceList()
+                omemoManager.initializeAsync(this@XmppManagerImpl)
+                omemoManager.trustOmemoIdentity(omemoManager.ownDevice, omemoManager.ownFingerprint)
+            } else {
+                Log.e(TAG, "connection must be initialized")
+            }
             rosterManager.clearContacts(connection)
             successHandler(result.getOrThrow())
         } else {
@@ -140,6 +172,7 @@ class XmppManagerImpl @Inject constructor(
             .setUsernameAndPassword(account.localPart, account.password)
             .setXmppDomain(account.domainPart)
             .setResource(Resourcepart.from("Android"))
+            .setSecurityMode(ConnectionConfiguration.SecurityMode.required)
             .build()
 
     // connect and login are called with Dispatchers.IO context
@@ -147,6 +180,9 @@ class XmppManagerImpl @Inject constructor(
         runCatching {
             withContext(ioDispatcher) {
                 connect()
+                omemoManager = OmemoManager.getInstanceFor(this@runCatching)
+                omemoManager.setTrustCallback(EphemeralTrustCallback())
+                omemoManager.addOmemoMessageListener(omemoMessageListener)
                 login()
                 this@connectAndLogin
             }
@@ -160,7 +196,7 @@ class XmppManagerImpl @Inject constructor(
 
             withContext(ioDispatcher) {
                 rosterManager.initialize(connection)
-                messageManager.initialize(connection)
+                messageManager.initialize(connection, omemoManager)
             }
 
             Online
@@ -211,5 +247,13 @@ class XmppManagerImpl @Inject constructor(
         xmppConnection?.removeConnectionListener(connectionListener)
         rosterManager.onCleared()
         messageManager.onCleared()
+    }
+
+    override fun initializationFailed(cause: java.lang.Exception?) {
+
+    }
+
+    override fun initializationFinished(manager: OmemoManager?) {
+
     }
 }

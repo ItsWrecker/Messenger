@@ -1,5 +1,6 @@
 package com.qxlabai.messenger.service.xmpp.di
 
+import android.content.Context
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -11,6 +12,7 @@ import com.qxlabai.messenger.service.xmpp.MessageManager
 import com.qxlabai.messenger.service.xmpp.RosterManager
 import com.qxlabai.messenger.service.xmpp.XmppManager
 import com.qxlabai.messenger.service.xmpp.XmppManagerImpl
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineDispatcher
 
@@ -24,13 +26,15 @@ class XmppManagerModule {
         rosterManager: RosterManager,
         messageManager: MessageManager,
         preferencesRepository: PreferencesRepository,
-        @Dispatcher(IO) ioDispatcher: CoroutineDispatcher
+        @Dispatcher(IO) ioDispatcher: CoroutineDispatcher,
+        @ApplicationContext context: Context
     ): XmppManager {
         return XmppManagerImpl(
             rosterManager = rosterManager,
             messageManager = messageManager,
             preferencesRepository = preferencesRepository,
-            ioDispatcher = ioDispatcher
+            ioDispatcher = ioDispatcher,
+            context
         )
     }
 }

@@ -17,6 +17,7 @@ import org.jivesoftware.smack.roster.Roster
 import org.jivesoftware.smack.roster.Roster.SubscriptionMode.accept_all
 import org.jivesoftware.smack.roster.RosterEntry
 import org.jivesoftware.smack.roster.RosterListener
+import org.jivesoftware.smack.roster.SubscribeListener
 import org.jivesoftware.smack.tcp.XMPPTCPConnection
 import org.jxmpp.jid.BareJid
 import org.jxmpp.jid.FullJid
@@ -38,17 +39,24 @@ class RosterManagerImpl @Inject constructor(
 
     private var presenceEventListener: PresenceEventListener? = null
 
+    private var subscribeListener: SubscribeListener? = null
+
     init {
         Roster.setDefaultSubscriptionMode(accept_all)
         Roster.setRosterLoadedAtLoginDefault(true)
+        Roster.SubscriptionMode.accept_all
     }
 
     override suspend fun initialize(connection: XMPPTCPConnection) {
         roster = Roster.getInstanceFor(connection)
+        roster.subscriptionMode = Roster.SubscriptionMode.manual
+
 
         Log.d(TAG, "Roster entries: ${roster.entries}")
 
         createNewContacts(roster.entries)
+
+        roster.addSubscriptionListener()
 
         roster.addRosterListener()
 
@@ -74,6 +82,7 @@ class RosterManagerImpl @Inject constructor(
             }
             .map(RosterEntry::asExternalModel)
 
+
         contactsRepository.updateContacts(newContacts)
     }
 
@@ -91,6 +100,7 @@ class RosterManagerImpl @Inject constructor(
         rosterListener = object : RosterListener {
             override fun entriesAdded(addresses: MutableCollection<Jid>?) {
                 Log.d(TAG, "EntriesAdded $addresses")
+
             }
 
             override fun entriesUpdated(addresses: MutableCollection<Jid>?) {
@@ -107,6 +117,12 @@ class RosterManagerImpl @Inject constructor(
         }
 
         addRosterListener(rosterListener)
+    }
+
+    private fun Roster.addSubscriptionListener() {
+        subscribeListener = SubscribeListener { from, subscribeRequest ->
+            return@SubscribeListener SubscribeListener.SubscribeAnswer.Approve
+        }
     }
 
     private fun Roster.addPresenceEventListener() {

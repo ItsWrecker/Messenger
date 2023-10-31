@@ -8,3 +8,5 @@ fun SmackMessage.asExternalModel() = Message.createReceivedMessage(
     peerJid = from.asBareJid().toString(),
     text = body
 )
+
+

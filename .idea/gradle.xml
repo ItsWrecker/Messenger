@@ -44,6 +44,7 @@
             <option value="$PROJECT_DIR$/features/conversations" />
             <option value="$PROJECT_DIR$/features/router" />
             <option value="$PROJECT_DIR$/features/settings" />
+            <option value="$PROJECT_DIR$/omemo" />
             <option value="$PROJECT_DIR$/service" />
             <option value="$PROJECT_DIR$/service/encrypt" />
             <option value="$PROJECT_DIR$/service/xmpp" />
