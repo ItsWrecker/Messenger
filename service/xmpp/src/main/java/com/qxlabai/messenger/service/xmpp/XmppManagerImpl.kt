@@ -153,7 +153,7 @@ class XmppManagerImpl @Inject constructor(
         return if (result.isSuccess) {
 
             if (connection.isAuthenticated) {
-                omemoManager.purgeDeviceList()
+                //omemoManager.purgeDeviceList()
                 omemoManager.initializeAsync(this@XmppManagerImpl)
                 omemoManager.trustOmemoIdentity(omemoManager.ownDevice, omemoManager.ownFingerprint)
             } else {

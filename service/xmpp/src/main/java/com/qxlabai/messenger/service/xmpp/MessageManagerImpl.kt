@@ -57,12 +57,7 @@ class MessageManagerImpl @Inject constructor(
     @ApplicationContext private val context: Context
 ) : MessageManager, OmemoMessageListener, OmemoManager.InitializationFinishedCallback {
 
-
     private val scope = CoroutineScope(SupervisorJob())
-
-    private val trustCallback: OmemoTrustCallback by lazy {
-        return@lazy EphemeralTrustCallback()
-    }
 
     private lateinit var chatManager: ChatManager
     private lateinit var chatStateManager: ChatStateManager
@@ -90,22 +85,6 @@ class MessageManagerImpl @Inject constructor(
                     omemoManager.ownJid
                 )
                 Log.e(TAG, "$deviceList")
-
-//                val pubSubManager = PubSubManager.getInstanceFor(connection, omemoManager.ownJid)
-//
-//                deviceList.allDevices.forEach {
-//                    try {
-//                        pubSubManager.getLeafNode(OmemoConstants.PEP_NODE_BUNDLE_FROM_DEVICE_ID(it))
-//                            .deleteAllItems()
-//                    } catch (exception: Exception) {
-//                        exception.printStackTrace()
-//                    }
-//                    try {
-//                        pubSubManager.deleteNode(OmemoConstants.PEP_NODE_BUNDLE_FROM_DEVICE_ID(it))
-//                    } catch (exception: Exception) {
-//                        exception.printStackTrace()
-//                    }
-//                }
 
             } catch (exception: Exception) {
 
@@ -180,11 +159,6 @@ class MessageManagerImpl @Inject constructor(
         Log.e(TAG, "$decryptedMessage")
     }
 
-    private fun observeIncomingMessages() {
-        incomingChatMessageListener = IncomingChatMessageListener(::handleIncomingMessage)
-        chatManager.addIncomingListener(incomingChatMessageListener)
-    }
-
     private fun observeOutgoingMessages() {
         outgoingChatMessageListener = OutgoingChatMessageListener(::handleOutgoingMessage)
         chatManager.addOutgoingListener(outgoingChatMessageListener)
@@ -225,20 +199,6 @@ class MessageManagerImpl @Inject constructor(
         }
     }
 
-    private fun handleIncomingMessage(
-        from: EntityBareJid,
-        message: SmackMessage,
-        chat: Chat
-    ) {
-
-//        Log.d(TAG, "IncomingListener - from: $from, message: $message, chat: $chat")
-//        scope.launch {
-//            messagesRepository.handleIncomingMessage(
-//                message = message.asExternalModel(),
-//                maybeNewConversation = from.asConversation()
-//            )
-//        }
-    }
 
     // TODO: This indicates that Smack have been tried to send the message and
     //  actually this does not mean that server received the message.
