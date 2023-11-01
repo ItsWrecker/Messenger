@@ -19,6 +19,7 @@ import com.qxlabai.messenger.features.conversations.navigation.ConversationsDest
 import com.qxlabai.messenger.features.router.navigation.RouterDestination
 import com.qxlabai.messenger.navigation.TopLevelDestination
 import com.qxlabai.messenger.R
+
 @Composable
 fun rememberMessengerAppState(
     navController: NavHostController = rememberNavController()
@@ -40,17 +41,18 @@ class MessengerAppState(
         @Composable get() {
             val route = currentDestination?.route
             return route != null &&
-                route != RouterDestination.route &&
-                route != AuthDestination.route &&
-                route != ChatDestination.route
+                    route != RouterDestination.route &&
+                    route != AuthDestination.route &&
+                    route != ChatDestination.route &&
+                    route != ContactsDestination.route
         }
 
     val shouldShowConnecting: Boolean
         @Composable get() {
             val route = currentDestination?.route
             return route != null &&
-                route != RouterDestination.route &&
-                route != AuthDestination.route
+                    route != RouterDestination.route &&
+                    route != AuthDestination.route
         }
 
     /**

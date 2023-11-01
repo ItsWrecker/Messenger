@@ -1,5 +1,6 @@
 package com.qxlabai.messenger.features.conversations.navigation
 
+import android.bluetooth.le.AdvertiseSettings
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
@@ -13,6 +14,7 @@ object ConversationsDestination : MessengerNavigationDestination {
 
 fun NavGraphBuilder.conversationsGraph(
     navigateToChat: (String) -> Unit,
+    navigateToSettings: (Unit) -> Unit,
     nestedGraphs: NavGraphBuilder.() -> Unit
 ) {
     navigation(
@@ -21,7 +23,8 @@ fun NavGraphBuilder.conversationsGraph(
     ) {
         composable(route = ConversationsDestination.destination) {
             ConversationsRoute(
-                navigateToChat = navigateToChat
+                navigateToChat = navigateToChat,
+                navigateToSetting = navigateToSettings
             )
         }
         nestedGraphs()

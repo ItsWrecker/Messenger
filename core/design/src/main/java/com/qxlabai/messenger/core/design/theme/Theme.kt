@@ -1,4 +1,4 @@
-package com.qxlabai.messenger.core.designsystem.theme
+package com.qxlabai.messenger.core.design.theme
 
 import android.os.Build
 import androidx.annotation.ChecksSdkIntAtLeast
@@ -12,6 +12,11 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.qxlabai.messenger.core.designsystem.theme.BackgroundTheme
+import com.qxlabai.messenger.core.designsystem.theme.GradientColors
+import com.qxlabai.messenger.core.designsystem.theme.LocalBackgroundTheme
+import com.qxlabai.messenger.core.designsystem.theme.LocalGradientColors
+import com.qxlabai.messenger.core.designsystem.theme.MessengerTypography
 
 val LightDefaultColorScheme = lightColorScheme(
     primary = Purple40,

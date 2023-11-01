@@ -14,6 +14,7 @@ import com.qxlabai.messenger.features.conversations.navigation.ConversationsDest
 import com.qxlabai.messenger.features.conversations.navigation.conversationsGraph
 import com.qxlabai.messenger.features.router.navigation.RouterDestination
 import com.qxlabai.messenger.features.router.navigation.routerGraph
+import com.qxlabai.messenger.features.settings.navigation.SettingsDestination
 import com.qxlabai.messenger.features.settings.navigation.settingsGraph
 
 @Composable
@@ -62,6 +63,11 @@ fun MessengerNavHost(
             navigateToChat = {
                 onNavigateToDestination(createNavigationParameters(it))
             },
+            navigateToSettings = {
+                onNavigateToDestination(
+                    NavigationParameters(destination = SettingsDestination)
+                )
+            },
             nestedGraphs = {
                 chatGraph(
                     onBackClick = {
@@ -76,6 +82,8 @@ fun MessengerNavHost(
                 onNavigateToDestination(createNavigationParameters(it))
             }
         )
-        settingsGraph()
+        settingsGraph {
+            navController.popBackStack()
+        }
     }
 }

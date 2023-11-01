@@ -46,7 +46,10 @@ class XmppService : Service() {
 
     private suspend fun observeAccountsStream() {
         accountsCollector.collectAccounts(
-            onNewLogin = { xmppManager.login(it) },
+            onNewLogin = {
+                xmppManager.login(it)
+                xmppManager.purseDevice()
+                         },
             onNewRegister = { xmppManager.register(it) },
         )
     }

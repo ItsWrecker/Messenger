@@ -113,14 +113,12 @@ class XmppManagerImpl @Inject constructor(
             stanza: Stanza?,
             decryptedMessage: OmemoMessage.Received?
         ) {
-            Log.e(TAG, "Received")
-            Log.e(TAG, "${decryptedMessage?.body}")
             try {
                 messageManager.handleIncomingMessage(
                     stanza,
                     decryptedMessage
                 )
-            }catch (exception: Exception){
+            } catch (exception: Exception) {
                 exception.printStackTrace()
             }
         }
@@ -153,7 +151,6 @@ class XmppManagerImpl @Inject constructor(
         return if (result.isSuccess) {
 
             if (connection.isAuthenticated) {
-                //omemoManager.purgeDeviceList()
                 omemoManager.initializeAsync(this@XmppManagerImpl)
                 omemoManager.trustOmemoIdentity(omemoManager.ownDevice, omemoManager.ownFingerprint)
             } else {
@@ -180,7 +177,8 @@ class XmppManagerImpl @Inject constructor(
         runCatching {
             withContext(ioDispatcher) {
                 connect()
-                omemoManager = OmemoManager.getInstanceFor(this@runCatching)
+                omemoManager =
+                    OmemoManager.getInstanceFor(this@runCatching, OmemoManager.randomDeviceId())
                 omemoManager.setTrustCallback(EphemeralTrustCallback())
                 omemoManager.addOmemoMessageListener(omemoMessageListener)
                 login()
@@ -255,5 +253,9 @@ class XmppManagerImpl @Inject constructor(
 
     override fun initializationFinished(manager: OmemoManager?) {
 
+    }
+
+    override fun purseDevice() {
+        if (xmppConnection?.isAuthenticated == true) omemoManager.purgeDeviceList()
     }
 }

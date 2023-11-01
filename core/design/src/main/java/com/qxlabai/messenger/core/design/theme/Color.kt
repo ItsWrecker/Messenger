@@ -1,4 +1,4 @@
-package com.qxlabai.messenger.core.designsystem.theme
+package com.qxlabai.messenger.core.design.theme
 
 import androidx.compose.ui.graphics.Color
 

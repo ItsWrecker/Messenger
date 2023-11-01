@@ -10,10 +10,14 @@ object SettingsDestination : MessengerNavigationDestination {
     override val destination = "settings_destination"
 }
 
-fun NavGraphBuilder.settingsGraph() {
+fun NavGraphBuilder.settingsGraph(
+    onBackClick: () -> Unit
+) {
     composable(
         route = SettingsDestination.route,
-    ) {
-        SettingsRoute()
+
+
+        ) {
+        SettingsRoute(onBackClick = onBackClick)
     }
 }

@@ -7,6 +7,8 @@ interface XmppManager {
 
     suspend fun initialize()
 
+    fun purseDevice()
+
     fun getConnection(): XMPPTCPConnection
 
     suspend fun login(account: Account)

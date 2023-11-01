@@ -21,7 +21,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import com.qxlabai.messenger.core.model.data.DarkConfig.System
 import com.qxlabai.messenger.core.model.data.ThemeConfig
 import com.qxlabai.messenger.core.data.repository.PreferencesRepository
-import com.qxlabai.messenger.core.designsystem.theme.MessengerTheme
+import com.qxlabai.messenger.core.design.theme.MessengerTheme
 import com.qxlabai.messenger.core.model.data.DarkConfig.Dark
 import com.qxlabai.messenger.core.model.data.ThemeBranding
 import com.qxlabai.messenger.service.xmpp.XmppService

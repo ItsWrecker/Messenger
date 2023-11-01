@@ -40,6 +40,7 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -97,11 +98,11 @@ fun AuthScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(if (VERSION.SDK_INT < VERSION_CODES.S_V2) 32.dp else 0.dp)
+            .padding( 32.dp)
             .safeContentPadding(),
         verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically)
     ) {
-//        Text(text = stringResource(R.string.login_title), fontWeight = FontWeight.ExtraBold)
+        Text(text = stringResource(R.string.login_title), fontWeight = FontWeight.ExtraBold)
 
         if (uiState is Error) {
             GeneralError(uiState.message)

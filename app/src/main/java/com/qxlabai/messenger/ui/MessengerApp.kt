@@ -81,18 +81,18 @@ fun MessengerApp(
                         .consumedWindowInsets(padding)
                 )
 
-                AnimatedVisibility(
-                    visible = appState.shouldShowBottomBar,
-                    enter = fadeIn(),
-                    exit = fadeOut(),
-                    modifier = Modifier.align(Alignment.BottomCenter)
-                ) {
-                    MessengerBottomBar(
-                        destinations = appState.topLevelDestinations,
-                        onNavigateToDestination = appState::navigate,
-                        currentDestination = appState.currentDestination,
-                    )
-                }
+//                AnimatedVisibility(
+//                    visible = false,
+//                    enter = fadeIn(),
+//                    exit = fadeOut(),
+//                    modifier = Modifier.align(Alignment.BottomCenter)
+//                ) {
+//                    MessengerBottomBar(
+//                        destinations = appState.topLevelDestinations,
+//                        onNavigateToDestination = appState::navigate,
+//                        currentDestination = appState.currentDestination,
+//                    )
+//                }
 
                 if (appState.shouldShowConnecting) {
                     Connecting(uiState is Connecting)
