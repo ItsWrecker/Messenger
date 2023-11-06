@@ -42,6 +42,7 @@
             <option value="$PROJECT_DIR$/features/chat" />
             <option value="$PROJECT_DIR$/features/contacts" />
             <option value="$PROJECT_DIR$/features/conversations" />
+            <option value="$PROJECT_DIR$/features/lock" />
             <option value="$PROJECT_DIR$/features/router" />
             <option value="$PROJECT_DIR$/features/settings" />
             <option value="$PROJECT_DIR$/omemo" />

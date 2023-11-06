@@ -12,13 +12,15 @@ object RouterDestination : MessengerNavigationDestination {
 
 fun NavGraphBuilder.routerGraph(
     navigateToAuth: () -> Unit,
-    navigateToConversations: () -> Unit
+    navigateToConversations: () -> Unit,
+    navigateToLock: () -> Unit
 ) {
     composable(
         route = RouterDestination.route,
     ) {
         RouterRoute(
             navigateToAuth = navigateToAuth,
+            navigateToLock = navigateToLock,
             navigateToConversations = navigateToConversations
         )
     }

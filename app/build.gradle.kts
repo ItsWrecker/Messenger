@@ -1,3 +1,7 @@
+import org.jetbrains.kotlin.ir.backend.js.compile
+import org.jetbrains.kotlin.konan.properties.Properties
+import java.io.FileInputStream
+
 plugins {
     id("android.application")
     id("android.application.compose")
@@ -20,15 +24,42 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+        multiDexEnabled = true
     }
+
+//    signingConfigs {
+//        create("release") {
+//            val signingPropsFile = file("../../signing.properties")
+//            if (signingPropsFile.exists()) {
+//                val signingProps = Properties()
+//                signingProps.load(FileInputStream(signingPropsFile))
+//                storeFile = file(signingProps.getProperty("RELEASE_STORE_FILE"))
+////                storePassword = signingProps.getProperty("RELEASE_STORE_PASSWORD")
+////                keyAlias = signingProps.getProperty("RELEASE_KEY_ALIAS")
+////                keyPassword = signingProps.getProperty("RELEASE_KEY_PASSWORD")
+//                println("Signing configuration loaded from signing.properties.")
+//            }
+//        }
+//    }
 
     buildTypes {
         val debug by getting {
             applicationIdSuffix = ".debug"
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            isMinifyEnabled = true
+
         }
         val release by getting {
             isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            this.isMinifyEnabled = true
+//            this.signingConfig = signingConfigs.getByName("release")
         }
     }
 
@@ -71,6 +102,7 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.testManifest)
 
+    compileOnly("com.android.support:multidex:1.0.3")
     configurations.configureEach {
         resolutionStrategy {
             force(libs.junit4)

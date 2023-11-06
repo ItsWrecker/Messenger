@@ -98,7 +98,7 @@ fun AuthScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding( 32.dp)
+            .padding(32.dp)
             .safeContentPadding(),
         verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically)
     ) {
@@ -157,12 +157,12 @@ fun AuthScreen(
         LoginButton(
             uiState = uiState,
             onClick = {
-                onLoginClick(jid, password)
-//                jidHasError = !jid.isValidJid
-//                passwordHasError = password.isEmpty()
-//                if (!jidHasError && !passwordHasError) {
-//                    focusManager.clearFocus()
-//                }
+                jidHasError = !jid.isValidJid
+                passwordHasError = password.isEmpty()
+                if (!jidHasError && !passwordHasError) {
+                    onLoginClick(jid, password)
+                    focusManager.clearFocus()
+                }
             },
             enabled = uiState != Loading,
         )

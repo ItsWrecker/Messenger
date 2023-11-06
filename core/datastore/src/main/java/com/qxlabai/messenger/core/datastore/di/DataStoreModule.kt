@@ -13,6 +13,8 @@ import com.qxlabai.messenger.core.common.coroutines.MessengerDispatchers.IO
 import com.qxlabai.messenger.core.common.coroutines.Dispatcher
 import com.qxlabai.messenger.core.datastore.UserPreferences
 import com.qxlabai.messenger.core.datastore.UserPreferencesSerializer
+import com.qxlabai.messenger.core.datastore.lock.LockPreferenceSerializer
+import com.qxlabai.messenger.core.datastore.lock.LockPreferences
 import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -35,4 +37,17 @@ object DataStoreModule {
         ) {
             context.dataStoreFile("user_preferences.pb")
         }
+
+    @Provides
+    @Singleton
+    fun providesLockPreferences(
+        @ApplicationContext context: Context,
+        @Dispatcher(IO) ioDispatcher: CoroutineDispatcher,
+        lockPreferenceSerializer: LockPreferenceSerializer
+    ): DataStore<LockPreferences> = DataStoreFactory.create(
+        serializer = lockPreferenceSerializer,
+        scope = CoroutineScope(ioDispatcher + SupervisorJob())
+    ) {
+        context.dataStoreFile("lock_preferences.pb")
+    }
 }

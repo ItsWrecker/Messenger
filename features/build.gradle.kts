@@ -15,4 +15,5 @@ dependencies {
     api(project(":features:chat"))
     api(project(":features:contacts"))
     api(project(":features:settings"))
+    api(project(":features:lock"))
 }

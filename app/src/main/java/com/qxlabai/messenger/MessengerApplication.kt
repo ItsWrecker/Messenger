@@ -16,6 +16,7 @@ class MessengerApplication : Application() {
                 AndroidSmackInitializer.initialize(this)
                 SignalOmemoService.acknowledgeLicense()
                 SignalOmemoService.setup()
+
             } catch (exception: Exception) {
                 exception.printStackTrace()
             }

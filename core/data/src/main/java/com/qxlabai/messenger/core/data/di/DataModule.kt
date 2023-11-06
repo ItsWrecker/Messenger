@@ -9,6 +9,8 @@ import com.qxlabai.messenger.core.data.repository.ConversationsRepository
 import com.qxlabai.messenger.core.data.repository.MessagesRepository
 import com.qxlabai.messenger.core.data.repository.ContactsRepositoryImpl
 import com.qxlabai.messenger.core.data.repository.ConversationsRepositoryImpl
+import com.qxlabai.messenger.core.data.repository.LockRepository
+import com.qxlabai.messenger.core.data.repository.LockRepositoryImpl
 import com.qxlabai.messenger.core.data.repository.MessagesRepositoryImpl
 import com.qxlabai.messenger.core.data.repository.PreferencesRepositoryImpl
 import com.qxlabai.messenger.core.data.repository.SendingChatStatesRepositoryImpl
@@ -43,4 +45,9 @@ interface DataModule {
     fun bindsSendingChatStatesRepository(
         sendingChatStatesRepository: SendingChatStatesRepositoryImpl
     ): SendingChatStatesRepository
+
+    @Binds
+    fun bindsLockRepository(
+        impl: LockRepositoryImpl
+    ): LockRepository
 }

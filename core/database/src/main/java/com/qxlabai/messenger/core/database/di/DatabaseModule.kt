@@ -23,6 +23,7 @@ object DatabaseModule {
         context,
         MessengerDatabase::class.java,
         "messenger.encrypted.db"
-    ).openHelperFactory(SupportFactory(PASSPHRASE.toByteArray()))
+    )
+        .openHelperFactory(SupportFactory(PASSPHRASE.toByteArray()))
         .build()
 }

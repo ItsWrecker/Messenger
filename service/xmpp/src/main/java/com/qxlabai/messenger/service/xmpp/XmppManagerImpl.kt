@@ -113,6 +113,7 @@ class XmppManagerImpl @Inject constructor(
             stanza: Stanza?,
             decryptedMessage: OmemoMessage.Received?
         ) {
+
             try {
                 messageManager.handleIncomingMessage(
                     stanza,

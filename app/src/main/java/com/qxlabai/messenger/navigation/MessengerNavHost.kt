@@ -12,6 +12,8 @@ import com.qxlabai.messenger.features.chat.navigation.chatGraph
 import com.qxlabai.messenger.features.contacts.navigation.contactsGraph
 import com.qxlabai.messenger.features.conversations.navigation.ConversationsDestination
 import com.qxlabai.messenger.features.conversations.navigation.conversationsGraph
+import com.qxlabai.messenger.features.lock.navigation.LockDestination
+import com.qxlabai.messenger.features.lock.navigation.lockGraph
 import com.qxlabai.messenger.features.router.navigation.RouterDestination
 import com.qxlabai.messenger.features.router.navigation.routerGraph
 import com.qxlabai.messenger.features.settings.navigation.SettingsDestination
@@ -47,8 +49,25 @@ fun MessengerNavHost(
                         popUpToInclusive = RouterDestination
                     )
                 )
+            },
+            navigateToLock = {
+                onNavigateToDestination(
+                    NavigationParameters(
+                        destination = LockDestination,
+                        popUpToInclusive = null
+                    )
+                )
             }
         )
+
+        lockGraph(navigateToConversations = {
+            onNavigateToDestination(
+                NavigationParameters(
+                    destination = ConversationsDestination,
+                    popUpToInclusive = LockDestination
+                )
+            )
+        })
         authGraph(
             navigateToConversations = {
                 onNavigateToDestination(

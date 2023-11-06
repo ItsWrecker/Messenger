@@ -14,13 +14,15 @@ import com.qxlabai.messenger.features.router.RouterUiState.UserAvailable
 fun RouterRoute(
     navigateToAuth: () -> Unit,
     navigateToConversations: () -> Unit,
-    viewModel: RouterViewModel = hiltViewModel()
+    viewModel: RouterViewModel = hiltViewModel(),
+    navigateToLock: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     RouterScreen(
         uiState = uiState,
         navigateToAuth = navigateToAuth,
+        navigateToLock = navigateToLock,
         navigateToConversations = navigateToConversations
     )
 }
@@ -29,12 +31,13 @@ fun RouterRoute(
 fun RouterScreen(
     uiState: RouterUiState,
     navigateToAuth: () -> Unit,
+    navigateToLock: () -> Unit,
     navigateToConversations: () -> Unit,
 ) {
 
     LaunchedEffect(uiState) {
         when (uiState) {
-            is UserAvailable -> navigateToConversations()
+            is UserAvailable -> navigateToLock()
             is AuthRequired -> navigateToAuth()
             else -> {}
         }

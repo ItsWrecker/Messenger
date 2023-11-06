@@ -14,6 +14,7 @@ import org.jivesoftware.smackx.chatstates.ChatState.gone
 import org.jivesoftware.smackx.chatstates.ChatState.inactive
 import org.jivesoftware.smackx.chatstates.ChatState.paused
 
+
 fun SmackChatState.asExternalEnum() = when (this) {
     active -> Active
     inactive -> Inactive
