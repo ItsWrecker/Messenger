@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="conversations_title">MESSENGER</string>
+    <string name="conversations_title">Messenger.</string>
     <string name="contacts_title">CONTACTS</string>
     <string name="chat_title">CONVERSATIONS</string>
     <string name="add">Add Contact</string>

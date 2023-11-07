@@ -357,7 +357,8 @@ private fun ChatInput(
                     .fillMaxWidth()
                     .padding(vertical = 12.dp)
                     .padding(start = 16.dp)
-                    .weight(1f)
+                    .weight(1f),
+
             )
 
             val isSendEnabled = messageText.isNotBlank()

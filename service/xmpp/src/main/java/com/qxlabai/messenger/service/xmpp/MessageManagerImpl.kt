@@ -55,7 +55,7 @@ class MessageManagerImpl @Inject constructor(
     private val messagesRepository: MessagesRepository,
     private val conversationsRepository: ConversationsRepository,
     @ApplicationContext private val context: Context
-) : MessageManager, OmemoMessageListener, OmemoManager.InitializationFinishedCallback {
+) : MessageManager {
 
     private val scope = CoroutineScope(SupervisorJob())
 
@@ -63,37 +63,12 @@ class MessageManagerImpl @Inject constructor(
     private lateinit var chatStateManager: ChatStateManager
     private lateinit var deliveryReceiptManager: DeliveryReceiptManager
 
-
-    private lateinit var omemoManager: OmemoManager
-
     private var incomingChatMessageListener: IncomingChatMessageListener? = null
     private var outgoingChatMessageListener: OutgoingChatMessageListener? = null
     private var chatStateListener: ChatStateListener? = null
     private var receiptReceivedListener: ReceiptReceivedListener? = null
-    private lateinit var connection: XMPPTCPConnection
 
     override suspend fun initialize(connection: XMPPTCPConnection, omemoManager: OmemoManager) {
-
-        try {
-            this.connection = connection
-            this.omemoManager = omemoManager
-            try {
-                omemoManager.requestDeviceListUpdateFor(JidCreate.bareFrom(omemoManager.ownJid))
-
-                val deviceList = OmemoService.getInstance().omemoStoreBackend.loadCachedDeviceList(
-                    omemoManager.ownDevice,
-                    omemoManager.ownJid
-                )
-                Log.e(TAG, "$deviceList")
-
-            } catch (exception: Exception) {
-
-            }
-
-        } catch (exception: Exception) {
-            Log.e(TAG, exception.message, exception)
-        }
-
         chatManager = ChatManager.getInstanceFor(connection)
         chatStateManager = ChatStateManager.getInstance(connection)
         deliveryReceiptManager = DeliveryReceiptManager.getInstanceFor(connection)
@@ -106,35 +81,22 @@ class MessageManagerImpl @Inject constructor(
             chatStateCollector.collectChatState(onChatStateChanged = ::sendChatState)
         }
 
-
-//        observeIncomingMessages()
+        observeIncomingMessages()
         observeOutgoingMessages()
         observeChatState()
         observeDeliveryReceipt()
     }
 
-
     // blocking
     private fun sendMessages(messages: List<Message>) {
         messages.forEach { message ->
+            val chat = chatManager.chatWith(JidCreate.entityBareFrom(message.peerJid))
+            val smackMessage = MessageBuilder
+                .buildMessage(message.stanzaId)
+                .addBody(null, message.body)
+                .build()
 
-            val contactJid = JidCreate.bareFrom(message.peerJid)
-
-            try {
-                val doesSupportOMEMO = omemoManager.contactSupportsOmemo(contactJid)
-                println(doesSupportOMEMO)
-            } catch (exception: Exception) {
-                Log.e(TAG, exception.message, exception)
-            }
-
-            val encryptedMessage =
-                omemoManager.encrypt(JidCreate.bareFrom(message.peerJid), message.body)
-            val msg = encryptedMessage.buildMessage(
-                StanzaBuilder.buildMessage(message.stanzaId)
-                    .addExtension(encryptedMessage.element),
-                JidCreate.bareFrom(message.peerJid)
-            )
-            connection.sendStanza(msg)
+            chat.send(smackMessage)
         }
     }
 
@@ -144,19 +106,9 @@ class MessageManagerImpl @Inject constructor(
         chatStateManager.setCurrentState(sendingChatState.chatState.asSmackEnum(), chat)
     }
 
-
-    override fun onOmemoCarbonCopyReceived(
-        direction: CarbonExtension.Direction?,
-        carbonCopy: org.jivesoftware.smack.packet.Message?,
-        wrappingMessage: org.jivesoftware.smack.packet.Message?,
-        decryptedCarbonCopy: OmemoMessage.Received?
-    ) {
-        Log.e(TAG, "Message")
-    }
-
-    override fun onOmemoMessageReceived(stanza: Stanza?, decryptedMessage: OmemoMessage.Received?) {
-
-        Log.e(TAG, "$decryptedMessage")
+    private fun observeIncomingMessages() {
+        incomingChatMessageListener = IncomingChatMessageListener(::handleIncomingMessage)
+        chatManager.addIncomingListener(incomingChatMessageListener)
     }
 
     private fun observeOutgoingMessages() {
@@ -176,29 +128,20 @@ class MessageManagerImpl @Inject constructor(
         deliveryReceiptManager.addReceiptReceivedListener(receiptReceivedListener)
     }
 
+    private fun handleIncomingMessage(
+        from: EntityBareJid,
+        message: SmackMessage,
+        chat: Chat
+    ) {
+        Log.d(TAG, "IncomingListener - from: $from, message: $message, chat: $chat")
 
-    override fun handleIncomingMessage(stanza: Stanza?, decryptedMessage: OmemoMessage.Received?) {
-        try {
-
-            scope.launch {
-
-                val stanzaId = stanza?.stanzaId
-                val message = decryptedMessage?.body
-                val peerJid = decryptedMessage?.senderDevice?.jid?.asBareJid()
-
-                if (stanzaId !=null && message !=null && peerJid !=null){
-                    messagesRepository.handleIncomingMessage(
-                        message = Message.createReceivedMessage(stanzaId, message, peerJid.toString()),
-                        maybeNewConversation = Conversation(peerJid.toString())
-                    )
-                }
-
-            }
-        }catch (exception: Exception){
-            Log.e(TAG, exception.message, exception)
+        scope.launch {
+            messagesRepository.handleIncomingMessage(
+                message = message.asExternalModel(),
+                maybeNewConversation = from.asConversation()
+            )
         }
     }
-
 
     // TODO: This indicates that Smack have been tried to send the message and
     //  actually this does not mean that server received the message.
@@ -245,6 +188,8 @@ class MessageManagerImpl @Inject constructor(
         )
 
         scope.launch {
+            // TODO: if user has multiple clients this will return null because stanzaId
+            //  does not exist for other clients
             val message = messagesRepository.getMessageByStanzaId(receiptId).first()
             message?.let {
                 messagesRepository.updateMessage(it.withStatus(status = SentDelivered))
@@ -266,11 +211,7 @@ class MessageManagerImpl @Inject constructor(
         }
     }
 
-    override fun initializationFinished(manager: OmemoManager?) {
-        Log.i(TAG, manager?.deviceId.toString())
-    }
+    override fun handleIncomingMessage(stanza: Stanza?, decryptedMessage: OmemoMessage.Received?) {
 
-    override fun initializationFailed(cause: java.lang.Exception?) {
-        Log.e(TAG, cause?.message, cause)
     }
 }

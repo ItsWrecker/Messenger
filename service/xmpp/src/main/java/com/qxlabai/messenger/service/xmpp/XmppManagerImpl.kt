@@ -11,17 +11,20 @@ import com.qxlabai.messenger.core.data.repository.PreferencesRepository
 import com.qxlabai.messenger.service.xmpp.omemo.EphemeralTrustCallback
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
 import org.jivesoftware.smack.ConnectionConfiguration
 import org.jivesoftware.smack.ReconnectionManager
 import org.jivesoftware.smack.ReconnectionManager.ReconnectionPolicy.FIXED_DELAY
+import org.jivesoftware.smack.SmackConfiguration
 import org.jivesoftware.smack.SmackException
 import org.jivesoftware.smack.packet.Message
 import org.jivesoftware.smack.packet.Stanza
 import org.jivesoftware.smack.tcp.XMPPTCPConnection
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration
 import org.jivesoftware.smackx.carbons.packet.CarbonExtension
+import org.jivesoftware.smackx.iqregister.AccountManager
 import org.jivesoftware.smackx.omemo.OmemoConfiguration
 import org.jivesoftware.smackx.omemo.OmemoManager
 import org.jivesoftware.smackx.omemo.OmemoMessage
@@ -29,6 +32,7 @@ import org.jivesoftware.smackx.omemo.listener.OmemoMessageListener
 import org.jivesoftware.smackx.omemo.signal.SignalCachingOmemoStore
 import org.jivesoftware.smackx.omemo.signal.SignalFileBasedOmemoStore
 import org.jivesoftware.smackx.omemo.signal.SignalOmemoService
+import org.jxmpp.jid.parts.Localpart
 import org.jxmpp.jid.parts.Resourcepart
 
 private const val TAG = "XmppManagerImpl"
@@ -51,7 +55,7 @@ class XmppManagerImpl @Inject constructor(
     private lateinit var signaleOmemoService: SignalOmemoService
 
     override suspend fun initialize() {
-
+        SmackConfiguration.DEBUG = true
 
         try {
             signaleOmemoService = SignalOmemoService.getInstance() as SignalOmemoService
@@ -91,22 +95,14 @@ class XmppManagerImpl @Inject constructor(
     override suspend fun register(account: Account) {
         this.account = account
         xmppConnection = account.register(
-            configurationBuilder = ::getConfiguration,
+            configurationBuilder = ::getConfigurationForRegister,
             connectionBuilder = ::XMPPTCPConnection,
-            connectionListener = ::addConnectionListener
+            connectionListener = ::addConnectionListener,
+            successHandler = { account.connectionSuccessHandler(it) },
+            failureHandler = { account.connectionFailureHandler(it) }
         )
     }
 
-    private fun Account.register(
-        configurationBuilder: (Account) -> XMPPTCPConnectionConfiguration,
-        connectionBuilder: (XMPPTCPConnectionConfiguration) -> XMPPTCPConnection,
-        connectionListener: (XMPPTCPConnection) -> Unit,
-    ): XMPPTCPConnection {
-        val configuration = configurationBuilder(this)
-        val connection = connectionBuilder(configuration)
-        connectionListener(connection)
-        return connection
-    }
 
     private val omemoMessageListener = object : OmemoMessageListener {
         override fun onOmemoMessageReceived(
@@ -135,6 +131,43 @@ class XmppManagerImpl @Inject constructor(
 
     }
 
+    private suspend fun Account.register(
+        configurationBuilder: (Account) -> XMPPTCPConnectionConfiguration,
+        connectionBuilder: (XMPPTCPConnectionConfiguration) -> XMPPTCPConnection,
+        connectionListener: (XMPPTCPConnection) -> Unit,
+        successHandler: suspend Account.(XMPPTCPConnection) -> XMPPTCPConnection,
+        failureHandler: suspend Account.(Throwable?) -> Unit
+    ): XMPPTCPConnection? {
+        val configuration = configurationBuilder(this)
+        val connection = connectionBuilder(configuration)
+        connectionListener(connection)
+        connection.connectOnce()
+        val result = connection.register(this)
+        return if (result.isSuccess) {
+            val loginResult = connection.login(this)
+            if (loginResult.isSuccess) {
+                if (connection.isAuthenticated) {
+                    omemoManager.initializeAsync(this@XmppManagerImpl)
+                    omemoManager.trustOmemoIdentity(
+                        omemoManager.ownDevice,
+                        omemoManager.ownFingerprint
+                    )
+                } else {
+                    Log.e(TAG, "connection must be initialized")
+                }
+                rosterManager.clearContacts(connection)
+                successHandler(result.getOrThrow())
+            } else {
+                failureHandler(result.exceptionOrNull())
+                null
+            }
+        } else {
+            result.exceptionOrNull()?.printStackTrace()
+            failureHandler(result.exceptionOrNull())
+            null
+        }
+    }
+
     private suspend fun Account.login(
         configurationBuilder: (Account) -> XMPPTCPConnectionConfiguration,
         connectionBuilder: (XMPPTCPConnectionConfiguration) -> XMPPTCPConnection,
@@ -144,40 +177,85 @@ class XmppManagerImpl @Inject constructor(
     ): XMPPTCPConnection? {
         val configuration = configurationBuilder(this)
         val connection = connectionBuilder(configuration)
-
         connectionListener(connection)
-
-        val result = connection.connectAndLogin()
-
+        val result = connection.connectOnce()
         return if (result.isSuccess) {
-
-            if (connection.isAuthenticated) {
-                omemoManager.initializeAsync(this@XmppManagerImpl)
-                omemoManager.trustOmemoIdentity(omemoManager.ownDevice, omemoManager.ownFingerprint)
+            val loginResult = connection.login(this)
+            if (loginResult.isSuccess) {
+                if (connection.isAuthenticated) {
+                    omemoManager.purgeDeviceList()
+                    omemoManager.initializeAsync(this@XmppManagerImpl)
+                    omemoManager.trustOmemoIdentity(
+                        omemoManager.ownDevice,
+                        omemoManager.ownFingerprint
+                    )
+                } else {
+                    Log.e(TAG, "connection must be initialized")
+                }
+                rosterManager.clearContacts(connection)
+                successHandler(result.getOrThrow())
             } else {
-                Log.e(TAG, "connection must be initialized")
+                failureHandler(result.exceptionOrNull())
+                null
             }
-            rosterManager.clearContacts(connection)
-            successHandler(result.getOrThrow())
         } else {
             failureHandler(result.exceptionOrNull())
             null
         }
     }
 
-    private fun getConfiguration(account: Account): XMPPTCPConnectionConfiguration =
-        XMPPTCPConnectionConfiguration.builder()
-            .setUsernameAndPassword(account.localPart, account.password)
+    private fun getConfigurationForRegister(account: Account): XMPPTCPConnectionConfiguration {
+        return XMPPTCPConnectionConfiguration.builder()
             .setXmppDomain(account.domainPart)
             .setResource(Resourcepart.from("Android"))
-            .setSecurityMode(ConnectionConfiguration.SecurityMode.required)
+            .setSecurityMode(ConnectionConfiguration.SecurityMode.ifpossible)
             .build()
 
-    // connect and login are called with Dispatchers.IO context
+    }
+
+    private fun getConfiguration(account: Account): XMPPTCPConnectionConfiguration =
+        XMPPTCPConnectionConfiguration.builder()
+            .setXmppDomain(account.domainPart)
+            .setResource(Resourcepart.from("Android"))
+            .setSecurityMode(ConnectionConfiguration.SecurityMode.ifpossible)
+            .build()
+
+    private suspend fun XMPPTCPConnection.register(account: Account): Result<XMPPTCPConnection> {
+        return runCatching {
+            withContext(Dispatchers.IO) {
+                val accountManager = AccountManager.getInstance(this@runCatching)
+                accountManager.createAccount(Localpart.from(account.localPart), account.password)
+                return@withContext this@runCatching
+            }
+        }
+    }
+
+    private suspend fun XMPPTCPConnection.connectOnce(): Result<XMPPTCPConnection> {
+        return runCatching {
+            withContext(Dispatchers.IO) {
+                this@runCatching.connect()
+                omemoManager =
+                    OmemoManager.getInstanceFor(this@runCatching, OmemoManager.randomDeviceId())
+                omemoManager.setTrustCallback(EphemeralTrustCallback())
+                omemoManager.addOmemoMessageListener(omemoMessageListener)
+                return@withContext this@runCatching
+            }
+        }
+    }
+
+    private suspend fun XMPPTCPConnection.login(account: Account): Result<XMPPTCPConnection> =
+        runCatching {
+            withContext(Dispatchers.IO) {
+                this@runCatching.login(account.localPart, account.password)
+                return@withContext this@runCatching
+            }
+        }
+
+
     private suspend fun XMPPTCPConnection.connectAndLogin(): Result<XMPPTCPConnection> =
         runCatching {
             withContext(ioDispatcher) {
-                connect()
+                this@runCatching.connect()
                 omemoManager =
                     OmemoManager.getInstanceFor(this@runCatching, OmemoManager.randomDeviceId())
                 omemoManager.setTrustCallback(EphemeralTrustCallback())

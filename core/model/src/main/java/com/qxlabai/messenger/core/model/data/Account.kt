@@ -21,16 +21,17 @@ data class Account(
             status == Offline
 
     companion object {
-        fun create(jid: String, password: String): Account {
+        fun create(jid: String, password: String, status: AccountStatus = ShouldLogin): Account {
             val (localPart, domainPart) = jid.localPartDomainPart
             return Account(
                 jid = jid,
                 localPart = localPart,
                 domainPart = domainPart,
                 password = password,
-                status = ShouldLogin
+                status = status
             )
         }
+
     }
 }
 

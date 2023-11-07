@@ -33,7 +33,8 @@ fun rememberMessengerAppState(
 class MessengerAppState(
     val navController: NavHostController
 ) {
-    val currentDestination: NavDestination?
+
+    private val currentDestination: NavDestination?
         @Composable get() = navController
             .currentBackStackEntryAsState().value?.destination
 
@@ -71,12 +72,6 @@ class MessengerAppState(
             icon = Filled.Contacts,
             iconTextId = R.string.contacts
         ),
-//        TopLevelDestination(
-//            route = SettingsDestination.route,
-//            destination = SettingsDestination.destination,
-//            icon = Filled.Settings,
-//            iconTextId = R.string.settings
-//        )
     )
 
     fun navigate(parameters: NavigationParameters) {

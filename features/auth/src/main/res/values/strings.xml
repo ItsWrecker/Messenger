@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="login">Login</string>
+    <string name="register">Register</string>
     <string name="password">Password</string>
     <string name="uuid">UUID</string>
     <string name="login_title">Enter your login information</string>
+    <string name="register_title">Please choose UUID</string>
     <string name="uuid_id_not_valid">UUID is not valid</string>
+    <string name="register_hint">Register for UUID</string>
+    <string name="login_hint">Login with UUID</string>
     <string name="error_password_not_valid">Password is not valid</string>
     <string name="hide_password">Hide password</string>
     <string name="show_password">Show password</string>

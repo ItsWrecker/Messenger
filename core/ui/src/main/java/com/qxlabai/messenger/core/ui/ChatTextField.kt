@@ -2,6 +2,7 @@ package com.qxlabai.messenger.core.ui
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -18,7 +19,7 @@ import com.qxlabai.messenger.core.designsystem.component.MessengerOutlinedTextFi
 fun ChatTextField(
     value: String,
     onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     MessengerOutlinedTextField(
         value = value,

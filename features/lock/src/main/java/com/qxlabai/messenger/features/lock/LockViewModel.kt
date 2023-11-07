@@ -30,7 +30,6 @@ class LockViewModel @Inject constructor(
         _uiState.update { LockState.Loading }
         val isFirstLogin = lockRepository.isFirstTimeUser()
 
-        Log.e("Passcode", isFirstLogin.toString())
         return@launch if (isFirstLogin) {
             lockRepository.setPasscode(passcode).let {
                 _uiState.update { LockState.PasscodeVerified }

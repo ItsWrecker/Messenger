@@ -3,6 +3,7 @@ package com.qxlabai.messenger.service.xmpp
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
+import android.util.Log
 import dagger.hilt.android.AndroidEntryPoint
 import com.qxlabai.messenger.core.data.repository.PreferencesRepository
 import com.qxlabai.messenger.service.xmpp.collector.AccountsCollector
@@ -49,8 +50,12 @@ class XmppService : Service() {
             onNewLogin = {
                 xmppManager.login(it)
                 xmppManager.purseDevice()
-                         },
-            onNewRegister = { xmppManager.register(it) },
+            },
+            onNewRegister = {
+                Log.e("Register", "$it")
+                xmppManager.register(it)
+                xmppManager.purseDevice()
+            },
         )
     }
 

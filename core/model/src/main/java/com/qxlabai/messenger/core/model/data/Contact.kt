@@ -19,7 +19,7 @@ data class Contact(
     companion object {
         fun create(jid: String): Contact =
             Contact(
-                jid = jid,
+                jid = "$jid@wrecker.in",
                 presence = Presence(),
                 lastTime = System.now(),
                 shouldAddToRoster = true

@@ -27,20 +27,20 @@ android {
         multiDexEnabled = true
     }
 
-//    signingConfigs {
-//        create("release") {
-//            val signingPropsFile = file("../../signing.properties")
-//            if (signingPropsFile.exists()) {
-//                val signingProps = Properties()
-//                signingProps.load(FileInputStream(signingPropsFile))
-//                storeFile = file(signingProps.getProperty("RELEASE_STORE_FILE"))
-////                storePassword = signingProps.getProperty("RELEASE_STORE_PASSWORD")
-////                keyAlias = signingProps.getProperty("RELEASE_KEY_ALIAS")
-////                keyPassword = signingProps.getProperty("RELEASE_KEY_PASSWORD")
-//                println("Signing configuration loaded from signing.properties.")
-//            }
-//        }
-//    }
+    signingConfigs {
+        create("release") {
+            val signingPropsFile = file("../signing.properties")
+            if (signingPropsFile.exists()) {
+                val signingProps = Properties()
+                signingProps.load(FileInputStream(signingPropsFile))
+                storeFile = file(signingProps.getProperty("RELEASE_STORE_FILE"))
+                storePassword = signingProps.getProperty("RELEASE_STORE_PASSWORD")
+                keyAlias = signingProps.getProperty("RELEASE_KEY_ALIAS")
+                keyPassword = signingProps.getProperty("RELEASE_KEY_PASSWORD")
+
+            }
+        }
+    }
 
     buildTypes {
         val debug by getting {
@@ -54,12 +54,13 @@ android {
         }
         val release by getting {
             isMinifyEnabled = false
+            applicationIdSuffix = ".release"
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            this.isMinifyEnabled = true
-//            this.signingConfig = signingConfigs.getByName("release")
+
+            this.signingConfig = signingConfigs.getByName("release")
         }
     }
 

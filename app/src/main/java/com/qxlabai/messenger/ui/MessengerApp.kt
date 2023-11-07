@@ -81,19 +81,6 @@ fun MessengerApp(
                         .consumedWindowInsets(padding)
                 )
 
-//                AnimatedVisibility(
-//                    visible = false,
-//                    enter = fadeIn(),
-//                    exit = fadeOut(),
-//                    modifier = Modifier.align(Alignment.BottomCenter)
-//                ) {
-//                    MessengerBottomBar(
-//                        destinations = appState.topLevelDestinations,
-//                        onNavigateToDestination = appState::navigate,
-//                        currentDestination = appState.currentDestination,
-//                    )
-//                }
-
                 if (appState.shouldShowConnecting) {
                     Connecting(uiState is Connecting)
                 }
@@ -118,34 +105,6 @@ private fun Connecting(isConnecting: Boolean) {
                     modifier = Modifier
                         .padding(vertical = 4.dp)
                         .align(Alignment.Center)
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun MessengerBottomBar(
-    destinations: List<TopLevelDestination>,
-    onNavigateToDestination: (NavigationParameters) -> Unit,
-    currentDestination: NavDestination?
-) {
-    Surface(color = MaterialTheme.colorScheme.surface) {
-        MessengerNavigationBar(
-            modifier = Modifier.windowInsetsPadding(
-                WindowInsets.safeDrawing.only(
-                    WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom
-                )
-            )
-        ) {
-            destinations.forEach { destination ->
-                val selected =
-                    currentDestination?.hierarchy?.any { it.route == destination.route } == true
-                MessengerNavigationBarItem(
-                    selected = selected,
-                    onClick = { onNavigateToDestination(NavigationParameters(destination)) },
-                    label = { Text(stringResource(destination.iconTextId)) },
-                    icon = { Icon(imageVector = destination.icon, contentDescription = null) }
                 )
             }
         }

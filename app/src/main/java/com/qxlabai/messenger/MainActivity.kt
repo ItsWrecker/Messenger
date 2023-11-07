@@ -81,6 +81,11 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+
+    }
 }
 
 private val ThemeConfig?.shouldUseAndroidTheme: Boolean
