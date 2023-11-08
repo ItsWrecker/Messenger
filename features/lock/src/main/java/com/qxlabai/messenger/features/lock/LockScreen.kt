@@ -1,17 +1,28 @@
 package com.qxlabai.messenger.features.lock
 
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
@@ -34,10 +45,15 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -47,8 +63,7 @@ import com.qxlabai.messenger.core.common.utils.isValidPasscode
 @OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
 fun LockRoute(
-    navigateToConversations: () -> Unit,
-    viewModel: LockViewModel = hiltViewModel()
+    navigateToConversations: () -> Unit, viewModel: LockViewModel = hiltViewModel()
 ) {
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -57,7 +72,8 @@ fun LockRoute(
         uiState = uiState,
         navigateToConversations = navigateToConversations,
         modifier = Modifier,
-        onVerifyClick = viewModel::verifyPasscode
+        onVerifyClick = viewModel::verifyPasscode,
+        onPasscodeTyping = viewModel::passcodeTyping
     )
 }
 
@@ -66,8 +82,8 @@ fun LockScreen(
     uiState: LockState,
     navigateToConversations: () -> Unit,
     modifier: Modifier,
-    onVerifyClick: (String) -> Unit
-
+    onVerifyClick: (String) -> Unit,
+    onPasscodeTyping: () -> Unit
 ) {
 
     val (passcode, setPasscode) = remember {
@@ -88,29 +104,29 @@ fun LockScreen(
             .safeContentPadding(),
         verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically)
     ) {
-
-        Text(text = stringResource(id = R.string.passcode_title), fontWeight = FontWeight.ExtraBold)
-
-        if (uiState is LockState.InvalidPasscode) {
-            Text(text = "Invalid Passcode please try again!!", color = Color.Red)
-        }
+        passcodeHasError = (uiState is LockState.InvalidPasscode)
+        Text(
+            text = stringResource(id = if (uiState is LockState.FirstLogin) R.string.passcode_title_re_enter else R.string.passcode_title),
+            fontWeight = FontWeight.ExtraBold
+        )
 
         InputField(
             value = passcode,
             onValueChange = {
                 setPasscode(it)
                 passcodeHasError = false
+                onPasscodeTyping()
             },
-            labelRes = R.string.passcode,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-            keyboardActions = KeyboardActions(
-                onNext = { focusManager.moveFocus(FocusDirection.Down) }
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Next, keyboardType = KeyboardType.NumberPassword
             ),
-            passcodeHasError = passcodeHasError,
+            keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
+            passcodeHasError = passcodeHasError || uiState is LockState.InvalidPasscode,
             errorRes = R.string.invalid_passcode,
             modifier = modifier.fillMaxWidth()
         )
 
+        Spacer(modifier = Modifier.height(16.dp))
         VerifyButton(
             uiState = uiState,
             onClick = {
@@ -128,21 +144,15 @@ fun LockScreen(
 
 @Composable
 fun VerifyButton(
-    uiState: LockState,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit,
-    enabled: Boolean
+    uiState: LockState, modifier: Modifier = Modifier, onClick: () -> Unit, enabled: Boolean
 ) {
     Button(
-        onClick = onClick,
-        enabled = enabled,
-        colors = ButtonDefaults.buttonColors(
+        onClick = onClick, enabled = enabled, colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.secondary,
             disabledContainerColor = MaterialTheme.colorScheme.secondary,
             contentColor = MaterialTheme.colorScheme.onSecondary,
             disabledContentColor = MaterialTheme.colorScheme.onSecondary
-        ),
-        modifier = modifier
+        ), modifier = modifier
             .fillMaxWidth()
             .heightIn(min = 50.dp)
     ) {
@@ -170,28 +180,31 @@ private fun InputField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    @StringRes labelRes: Int,
     passcodeHasError: Boolean,
     @StringRes errorRes: Int,
     keyboardOptions: KeyboardOptions,
     keyboardActions: KeyboardActions,
     visualTransformation: VisualTransformation = VisualTransformation.None,
-    trailingIcon: @Composable (() -> Unit)? = null,
 ) {
     Column {
-        OutlinedTextField(
-            value = value,
+        BasicTextField(value = value,
             onValueChange = onValueChange,
-            label = { Text(text = stringResource(labelRes)) },
             singleLine = true,
             keyboardActions = keyboardActions,
             keyboardOptions = keyboardOptions,
             visualTransformation = visualTransformation,
-            trailingIcon = trailingIcon,
-            isError = passcodeHasError,
-            modifier = modifier.fillMaxWidth()
-        )
+            modifier = modifier.fillMaxWidth(),
+            maxLines = 1,
+            decorationBox = {
+                Row(horizontalArrangement = Arrangement.Center) {
+                    repeat(4) {
+                        CharView(index = it, text = value)
+                        Spacer(modifier = Modifier.width(8.dp))
+                    }
+                }
+            })
         if (passcodeHasError) {
+
             Text(
                 text = stringResource(errorRes),
                 color = MaterialTheme.colorScheme.error,
@@ -200,4 +213,36 @@ private fun InputField(
             )
         }
     }
+}
+
+@Composable
+private fun CharView(
+    index: Int, text: String
+) {
+    val isFocused = text.length == index
+    val char = when {
+        index == text.length -> "?"
+        index > text.length -> ""
+        else -> text[index].toString()
+    }
+    Text(
+        modifier = Modifier
+
+            .border(
+                2.dp, when {
+                    isFocused -> Color.LightGray
+                    else -> Color.DarkGray
+                }, RoundedCornerShape(12.dp)
+            )
+            .padding(16.dp)
+            .wrapContentSize(Alignment.Center)
+            .requiredSize(24.dp),
+        text = char,
+        color = if (isFocused) Color.LightGray else Color.DarkGray,
+        textAlign = TextAlign.Center,
+        fontStyle = FontStyle.Normal,
+        fontWeight = FontWeight.Bold,
+        fontFamily = FontFamily.Monospace,
+        fontSize = 22.sp
+    )
 }

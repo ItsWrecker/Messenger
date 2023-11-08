@@ -38,6 +38,10 @@ class LockViewModel @Inject constructor(
             _uiState.update { if (status) LockState.PasscodeVerified else LockState.InvalidPasscode }
         }
     }
+
+    fun passcodeTyping() = viewModelScope.launch {
+        _uiState.update { LockState.PasscodeTyping }
+    }
 }
 
 sealed interface LockState {
@@ -47,5 +51,7 @@ sealed interface LockState {
     object PasscodeVerified : LockState
 
     object InvalidPasscode : LockState
+
+    object PasscodeTyping : LockState
 
 }
