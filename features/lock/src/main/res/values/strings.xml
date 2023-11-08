@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="passcode_title">Enter your passcode</string>
+    <string name="set_passcode_title">Set your passcode</string>
+    <string name="passcode">Passcode</string>
+    <string name="invalid_passcode">Passcode is not valid</string>
+    <string name="verify">Verify Passcode</string>
+    <string name="set_passcode">Set Passcode</string>
+</resources>
