@@ -53,7 +53,9 @@ android {
 
         }
         val release by getting {
-            isMinifyEnabled = false
+            this.isMinifyEnabled = true
+            this.isDebuggable = false
+            this.isJniDebuggable = false
             applicationIdSuffix = ".release"
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -64,12 +66,15 @@ android {
         }
     }
 
+
+
     packagingOptions {
         resources {
             excludes.add("/META-INF/{AL2.0,LGPL2.1}")
         }
     }
 }
+
 
 dependencies {
     api(project(":features"))

@@ -53,17 +53,23 @@ class XmppManagerImpl @Inject constructor(
 
     private lateinit var omemoManager: OmemoManager
     private lateinit var signaleOmemoService: SignalOmemoService
+    var omemoStoreBackendSet = false
 
     override suspend fun initialize() {
         SmackConfiguration.DEBUG = true
 
         try {
-            signaleOmemoService = SignalOmemoService.getInstance() as SignalOmemoService
-            signaleOmemoService.omemoStoreBackend =
-                SignalCachingOmemoStore(SignalFileBasedOmemoStore(context.filesDir))
-            OmemoConfiguration.setAddOmemoHintBody(false)
+            if (this::signaleOmemoService.isInitialized.not()) {
+                signaleOmemoService = SignalOmemoService.getInstance() as SignalOmemoService
+                OmemoConfiguration.setAddOmemoHintBody(false)
+            }
+            if (!omemoStoreBackendSet) {
+                signaleOmemoService.omemoStoreBackend =
+                    SignalCachingOmemoStore(SignalFileBasedOmemoStore(context.filesDir))
+                omemoStoreBackendSet = true
+            }
         } catch (exception: Exception) {
-            exception.printStackTrace()
+            Log.e(TAG, exception.message, exception)
         }
 
         if (xmppConnection == null) {
@@ -109,6 +115,7 @@ class XmppManagerImpl @Inject constructor(
             stanza: Stanza?,
             decryptedMessage: OmemoMessage.Received?
         ) {
+            Log.e(TAG, decryptedMessage?.body.toString())
 
             try {
                 messageManager.handleIncomingMessage(
@@ -252,19 +259,6 @@ class XmppManagerImpl @Inject constructor(
         }
 
 
-    private suspend fun XMPPTCPConnection.connectAndLogin(): Result<XMPPTCPConnection> =
-        runCatching {
-            withContext(ioDispatcher) {
-                this@runCatching.connect()
-                omemoManager =
-                    OmemoManager.getInstanceFor(this@runCatching, OmemoManager.randomDeviceId())
-                omemoManager.setTrustCallback(EphemeralTrustCallback())
-                omemoManager.addOmemoMessageListener(omemoMessageListener)
-                login()
-                this@connectAndLogin
-            }
-        }
-
     private suspend fun Account.connectionSuccessHandler(
         connection: XMPPTCPConnection
     ): XMPPTCPConnection {
@@ -327,11 +321,12 @@ class XmppManagerImpl @Inject constructor(
     }
 
     override fun initializationFailed(cause: java.lang.Exception?) {
+        Log.e(TAG, cause?.message, cause)
 
     }
 
     override fun initializationFinished(manager: OmemoManager?) {
-
+        Log.i(TAG, manager?.ownJid.toString())
     }
 
     override fun purseDevice() {

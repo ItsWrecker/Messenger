@@ -49,12 +49,11 @@ import org.jxmpp.jid.impl.JidCreate
 
 private const val TAG = "MessagesManagerImpl"
 
-class MessageManagerImpl @Inject constructor(
+ class MessageManagerImpl @Inject constructor(
     private val messagesCollector: MessagesCollector,
     private val chatStateCollector: ChatStateCollector,
     private val messagesRepository: MessagesRepository,
-    private val conversationsRepository: ConversationsRepository,
-    @ApplicationContext private val context: Context
+    private val conversationsRepository: ConversationsRepository
 ) : MessageManager {
 
     private val scope = CoroutineScope(SupervisorJob())
@@ -211,7 +210,7 @@ class MessageManagerImpl @Inject constructor(
         }
     }
 
-    override fun handleIncomingMessage(stanza: Stanza?, decryptedMessage: OmemoMessage.Received?) {
+     override fun handleIncomingMessage(stanza: Stanza?, decryptedMessage: OmemoMessage.Received?) {
 
-    }
-}
+     }
+ }
