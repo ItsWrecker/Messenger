@@ -113,9 +113,10 @@ fun LockScreen(
         InputField(
             value = passcode,
             onValueChange = {
-                setPasscode(it)
+                setPasscode(it.take(4))
                 passcodeHasError = false
                 onPasscodeTyping()
+                if (it.length > 4) focusManager.clearFocus(true)
             },
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Next, keyboardType = KeyboardType.NumberPassword
