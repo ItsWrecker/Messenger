@@ -33,4 +33,8 @@ class PreferencesRepositoryImpl @Inject constructor(
 
     override suspend fun updateThemeConfig(themeConfig: ThemeConfig) =
         preferencesDataSource.updateThemeConfig(themeConfig.asPreferences())
+
+    override suspend fun logout() {
+        preferencesDataSource.logout()
+    }
 }

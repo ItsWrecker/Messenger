@@ -56,6 +56,11 @@ class XmppService : Service() {
                 xmppManager.register(it)
                 xmppManager.purseDevice()
             },
+            onLogout = {
+                Log.e("Logout", "logout")
+                xmppManager.logout()
+                preferencesRepository.logout()
+            }
         )
     }
 

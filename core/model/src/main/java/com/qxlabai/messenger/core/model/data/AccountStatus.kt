@@ -13,5 +13,5 @@ enum class AccountStatus {
     ServerNotFound,
     RegistrationSuccessful,
     RegistrationFailed,
-    RegistrationAlreadyExist
+    RegistrationAlreadyExist,
 }

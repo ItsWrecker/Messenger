@@ -39,4 +39,5 @@ sealed interface RouterUiState {
     object UserAvailable : RouterUiState
 
     object AuthRequired : RouterUiState
+
 }

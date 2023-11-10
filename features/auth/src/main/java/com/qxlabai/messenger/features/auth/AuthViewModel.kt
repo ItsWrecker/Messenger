@@ -2,28 +2,26 @@ package com.qxlabai.messenger.features.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
+import com.qxlabai.messenger.core.data.repository.PreferencesRepository
 import com.qxlabai.messenger.core.model.data.Account
 import com.qxlabai.messenger.core.model.data.AccountStatus.Online
-import com.qxlabai.messenger.core.model.data.AccountStatus.ServerNotFound
-import com.qxlabai.messenger.core.model.data.AccountStatus.Unauthorized
-import com.qxlabai.messenger.core.model.data.AccountStatus.RegistrationSuccessful
-import com.qxlabai.messenger.core.model.data.AccountStatus.RegistrationFailed
 import com.qxlabai.messenger.core.model.data.AccountStatus.RegistrationAlreadyExist
-import com.qxlabai.messenger.core.data.repository.PreferencesRepository
-import com.qxlabai.messenger.core.model.data.AccountStatus
-import com.qxlabai.messenger.core.model.data.AccountStatus.ShouldLogin
+import com.qxlabai.messenger.core.model.data.AccountStatus.RegistrationFailed
+import com.qxlabai.messenger.core.model.data.AccountStatus.RegistrationSuccessful
+import com.qxlabai.messenger.core.model.data.AccountStatus.ServerNotFound
 import com.qxlabai.messenger.core.model.data.AccountStatus.ShouldRegister
+import com.qxlabai.messenger.core.model.data.AccountStatus.Unauthorized
 import com.qxlabai.messenger.features.auth.AuthUiState.Error
 import com.qxlabai.messenger.features.auth.AuthUiState.Idle
 import com.qxlabai.messenger.features.auth.AuthUiState.Loading
 import com.qxlabai.messenger.features.auth.AuthUiState.Success
-import javax.inject.Inject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
@@ -66,6 +64,7 @@ class AuthViewModel @Inject constructor(
                 RegistrationFailed -> _uiState.update { Error("Registration failed") }
                 RegistrationAlreadyExist -> _uiState.update { Error("UUID AlreadyExits") }
                 else -> { /*Not interested*/
+
                 }
             }
         }

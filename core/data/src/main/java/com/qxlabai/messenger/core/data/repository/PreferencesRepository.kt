@@ -18,4 +18,6 @@ interface PreferencesRepository {
     fun getThemeConfig(): Flow<ThemeConfig>
 
     suspend fun updateThemeConfig(themeConfig: ThemeConfig)
+
+    suspend fun logout()
 }

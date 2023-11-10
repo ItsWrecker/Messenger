@@ -10,9 +10,11 @@ import com.qxlabai.messenger.core.data.repository.PreferencesRepository
 import com.qxlabai.messenger.core.model.data.Account
 import com.qxlabai.messenger.features.settings.SettingsUiState.Loading
 import com.qxlabai.messenger.features.settings.SettingsUiState.Success
+import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -23,7 +25,7 @@ class SettingsViewModel @Inject constructor(
 ) : ViewModel() {
 
 
-    val uiState: StateFlow<SettingsUiState> =
+    var uiState: StateFlow<SettingsUiState> =
         preferencesRepository.getAccount()
             .map { account ->
                 Success(
@@ -35,6 +37,10 @@ class SettingsViewModel @Inject constructor(
                 started = SharingStarted.WhileSubscribed(5_000),
                 initialValue = Loading
             )
+
+    fun logout() = viewModelScope.launch {
+        preferencesRepository.logout()
+    }
 
 
 }

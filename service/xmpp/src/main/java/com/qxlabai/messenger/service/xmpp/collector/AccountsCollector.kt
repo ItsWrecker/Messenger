@@ -8,6 +8,7 @@ interface AccountsCollector {
      * */
     suspend fun collectAccounts(
         onNewLogin: suspend (Account) -> Unit,
-        onNewRegister: suspend (Account) -> Unit
+        onNewRegister: suspend (Account) -> Unit,
+        onLogout: suspend () -> Unit
     )
 }

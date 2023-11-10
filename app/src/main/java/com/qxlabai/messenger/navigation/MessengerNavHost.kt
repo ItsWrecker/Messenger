@@ -101,8 +101,15 @@ fun MessengerNavHost(
                 onNavigateToDestination(createNavigationParameters(it))
             }
         )
-        settingsGraph {
+        settingsGraph(navigateToAuth = {
+            onNavigateToDestination(
+                NavigationParameters(
+                    destination = AuthDestination,
+                    popUpToInclusive = RouterDestination
+                )
+            )
+        }, onBackClick = {
             navController.popBackStack()
-        }
+        })
     }
 }

@@ -2,11 +2,14 @@ package com.qxlabai.messenger.core.datastore
 
 import android.util.Log
 import androidx.datastore.core.DataStore
+import com.qxlabai.messenger.core.model.data.AccountStatus
 import java.io.IOException
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.reduce
 
 class MessengerPreferencesDataSource @Inject constructor(
     private val userPreferences: DataStore<UserPreferences>
@@ -56,7 +59,7 @@ class MessengerPreferencesDataSource @Inject constructor(
     suspend fun updateAccount(account: PreferencesAccount) {
         try {
             userPreferences.updateData { currentPreferences ->
-                currentPreferences.copy (
+                currentPreferences.copy(
                     accountJid = account.jid,
                     accountLocalPart = account.localPart,
                     accountDomainPart = account.domainPart,
@@ -84,13 +87,21 @@ class MessengerPreferencesDataSource @Inject constructor(
     suspend fun updateThemeConfig(themeConfig: PreferencesThemeConfig) {
         try {
             userPreferences.updateData { currentPreferences ->
-                currentPreferences.copy (
+                currentPreferences.copy(
                     themeBranding = themeConfig.themeBranding,
                     darkConfig = themeConfig.darkConfig
                 )
             }
         } catch (ioException: IOException) {
             Log.e("DialoguePreferences", "Failed to update user preferences", ioException)
+        }
+    }
+
+    suspend fun logout() {
+        userPreferences.updateData {
+            it.copy(
+                accountStatus = UserPreferences.AccountStatus.Unauthorized
+            )
         }
     }
 }

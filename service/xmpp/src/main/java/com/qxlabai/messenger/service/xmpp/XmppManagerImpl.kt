@@ -332,4 +332,10 @@ class XmppManagerImpl @Inject constructor(
     override fun purseDevice() {
         if (xmppConnection?.isAuthenticated == true) omemoManager.purgeDeviceList()
     }
+
+    override suspend fun logout() {
+        if (xmppConnection?.isConnected == true) {
+            xmppConnection?.disconnect()
+        }
+    }
 }

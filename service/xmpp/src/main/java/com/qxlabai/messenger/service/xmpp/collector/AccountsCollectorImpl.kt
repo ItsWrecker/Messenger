@@ -7,6 +7,8 @@ import com.qxlabai.messenger.core.model.data.AccountStatus.Registering
 import com.qxlabai.messenger.core.model.data.AccountStatus.ShouldLogin
 import com.qxlabai.messenger.core.model.data.AccountStatus.ShouldRegister
 import com.qxlabai.messenger.core.data.repository.PreferencesRepository
+import com.qxlabai.messenger.core.model.data.AccountStatus.NotSet
+import com.qxlabai.messenger.core.model.data.AccountStatus.Unauthorized
 import javax.inject.Inject
 
 class AccountsCollectorImpl @Inject constructor(
@@ -15,7 +17,8 @@ class AccountsCollectorImpl @Inject constructor(
 
     override suspend fun collectAccounts(
         onNewLogin: suspend (Account) -> Unit,
-        onNewRegister: suspend (Account) -> Unit
+        onNewRegister: suspend (Account) -> Unit,
+        onLogout: suspend () -> Unit
     ) {
         preferencesRepository.getAccount().collect { account ->
             Log.d("Collector", "Collecting account: $account")
@@ -26,6 +29,10 @@ class AccountsCollectorImpl @Inject constructor(
             if (account.status == ShouldRegister) {
                 preferencesRepository.updateAccount(account.copy(status = Registering))
                 onNewRegister(account)
+            }
+            if (account.status == Unauthorized) {
+                preferencesRepository.updateAccount(account.copy("", "", "", "", NotSet))
+                onLogout()
             }
         }
     }

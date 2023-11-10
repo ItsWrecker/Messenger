@@ -11,13 +11,14 @@ object SettingsDestination : MessengerNavigationDestination {
 }
 
 fun NavGraphBuilder.settingsGraph(
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    navigateToAuth: () -> Unit
 ) {
     composable(
         route = SettingsDestination.route,
 
 
         ) {
-        SettingsRoute(onBackClick = onBackClick)
+        SettingsRoute(onBackClick = onBackClick, navigateToAuth = navigateToAuth)
     }
 }

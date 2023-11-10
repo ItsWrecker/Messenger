@@ -15,6 +15,8 @@ data class UserPreferences(
     val darkConfig: DarkConfig = DarkConfig.Dark
 ) {
 
+
+    fun reset() = UserPreferences()
     @Serializable
     enum class AccountStatus {
         NotSet,

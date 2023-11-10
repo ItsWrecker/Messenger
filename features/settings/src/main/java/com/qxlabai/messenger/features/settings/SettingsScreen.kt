@@ -2,28 +2,24 @@ package com.qxlabai.messenger.features.settings
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Beenhere
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -43,8 +39,6 @@ import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.qxlabai.messenger.core.designsystem.component.DialogueDivider
 import com.qxlabai.messenger.core.designsystem.component.MessengerTopAppBar
-import com.qxlabai.messenger.core.model.data.DarkConfig
-import com.qxlabai.messenger.core.model.data.ThemeBranding
 import com.qxlabai.messenger.core.ui.ContactThumb
 
 
@@ -53,12 +47,15 @@ import com.qxlabai.messenger.core.ui.ContactThumb
 fun SettingsRoute(
     viewModel: SettingsViewModel = hiltViewModel(),
     onBackClick: () -> Unit,
+    navigateToAuth: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     SettingsScreen(
         uiState = uiState,
-        onBackClick = onBackClick
+        onBackClick = onBackClick,
+        logout = viewModel::logout,
+        navigateToAuth = navigateToAuth
     )
 }
 
@@ -68,7 +65,10 @@ fun SettingsScreen(
     uiState: SettingsUiState,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
+    logout: () -> Unit,
+    navigateToAuth: () -> Unit
 ) {
+
     Scaffold(
         topBar = {
             MessengerTopAppBar(
@@ -139,6 +139,25 @@ fun SettingsScreen(
                         ),
                         label = { Text(text = "PASSWORD") }
                     )
+
+                    OutlinedButton(
+                        onClick = {
+                            logout()
+                            navigateToAuth()
+                        },
+                        modifier.padding(16.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            MaterialTheme.colorScheme.errorContainer.copy(
+                                alpha = 0.5F
+                            )
+                        )
+                    ) {
+                        Text(
+                            text = "LOGOUT",
+                            modifier = Modifier.padding(8.dp),
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
 
                 }
             }
