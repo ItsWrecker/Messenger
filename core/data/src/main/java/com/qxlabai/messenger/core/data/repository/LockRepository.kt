@@ -6,4 +6,6 @@ interface LockRepository {
     suspend fun verifyPasscode(passcode: String): Boolean
 
     suspend fun setPasscode(passcode: String)
+
+    suspend fun reset()
 }

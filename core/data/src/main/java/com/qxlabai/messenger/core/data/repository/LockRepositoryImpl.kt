@@ -12,4 +12,9 @@ class LockRepositoryImpl @Inject constructor(
 
     override suspend fun setPasscode(passcode: String) =
         lockPreferenceDataSource.setPasscode(passcode)
+
+    override suspend fun reset() {
+        lockPreferenceDataSource.setPasscode("")
+    }
+
 }

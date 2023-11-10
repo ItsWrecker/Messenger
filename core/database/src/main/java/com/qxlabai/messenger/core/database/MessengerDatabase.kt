@@ -36,4 +36,6 @@ abstract class MessengerDatabase : RoomDatabase() {
     abstract fun conversationDao(): ConversationDao
 
     abstract fun sendingChatStateDao(): SendingChatStateDao
+
+
 }

@@ -4,6 +4,7 @@ import com.qxlabai.messenger.core.model.data.Account
 import com.qxlabai.messenger.core.model.data.ConnectionStatus
 import com.qxlabai.messenger.core.model.data.ThemeConfig
 import com.qxlabai.messenger.core.data.model.asPreferences
+import com.qxlabai.messenger.core.database.MessengerDatabase
 import com.qxlabai.messenger.core.datastore.MessengerPreferencesDataSource
 import com.qxlabai.messenger.core.datastore.PreferencesAccount
 import com.qxlabai.messenger.core.datastore.PreferencesThemeConfig
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.map
 
 class PreferencesRepositoryImpl @Inject constructor(
     private val preferencesDataSource: MessengerPreferencesDataSource,
+    private val lockRepository: LockRepository
 ) : PreferencesRepository {
 
     override fun getConnectionStatus(): Flow<ConnectionStatus> =

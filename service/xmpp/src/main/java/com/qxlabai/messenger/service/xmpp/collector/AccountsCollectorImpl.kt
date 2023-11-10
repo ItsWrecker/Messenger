@@ -1,6 +1,10 @@
 package com.qxlabai.messenger.service.xmpp.collector
 
+import android.content.Context
+import android.database.DatabaseUtils
 import android.util.Log
+import com.qxlabai.messenger.core.common.coroutines.MessengerDispatchers
+import com.qxlabai.messenger.core.data.repository.LockRepository
 import com.qxlabai.messenger.core.model.data.Account
 import com.qxlabai.messenger.core.model.data.AccountStatus.LoggingIn
 import com.qxlabai.messenger.core.model.data.AccountStatus.Registering
@@ -9,10 +13,15 @@ import com.qxlabai.messenger.core.model.data.AccountStatus.ShouldRegister
 import com.qxlabai.messenger.core.data.repository.PreferencesRepository
 import com.qxlabai.messenger.core.model.data.AccountStatus.NotSet
 import com.qxlabai.messenger.core.model.data.AccountStatus.Unauthorized
+import dagger.hilt.android.qualifiers.ApplicationContext
+import java.io.File
 import javax.inject.Inject
 
 class AccountsCollectorImpl @Inject constructor(
-    private val preferencesRepository: PreferencesRepository
+    private val preferencesRepository: PreferencesRepository,
+    private val lockRepository: LockRepository,
+
+    @ApplicationContext private val context: Context
 ) : AccountsCollector {
 
     override suspend fun collectAccounts(
@@ -31,7 +40,19 @@ class AccountsCollectorImpl @Inject constructor(
                 onNewRegister(account)
             }
             if (account.status == Unauthorized) {
-                preferencesRepository.updateAccount(account.copy("", "", "", "", NotSet))
+                try {
+                    preferencesRepository.updateAccount(account.copy("", "", "", "", NotSet))
+                    lockRepository.reset()
+//                    if (context.cacheDir.exists())
+//                        context.cacheDir.deleteRecursively()
+//                    if (context.filesDir.exists())
+//                        context.filesDir.deleteRecursively()
+//                    if (context.dataDir.exists())
+//                        context.dataDir.deleteRecursively()
+
+                } catch (exception: Exception) {
+
+                }
                 onLogout()
             }
         }
