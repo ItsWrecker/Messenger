@@ -190,7 +190,7 @@ class XmppManagerImpl @Inject constructor(
             val loginResult = connection.login(this)
             if (loginResult.isSuccess) {
                 if (connection.isAuthenticated) {
-                    omemoManager.purgeDeviceList()
+//                    omemoManager.purgeDeviceList()
                     omemoManager.initializeAsync(this@XmppManagerImpl)
                     omemoManager.trustOmemoIdentity(
                         omemoManager.ownDevice,

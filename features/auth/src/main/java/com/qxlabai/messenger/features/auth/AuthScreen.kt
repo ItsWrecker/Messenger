@@ -67,9 +67,10 @@ import com.qxlabai.messenger.features.auth.AuthUiState.Success
 @OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
 fun AuthRoute(
-    navigateToConversations: () -> Unit,
+    navigateToLockScreen: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: AuthViewModel = hiltViewModel()
+    viewModel: AuthViewModel = hiltViewModel(),
+
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -77,8 +78,8 @@ fun AuthRoute(
         uiState = uiState,
         onLoginClick = viewModel::login,
         onRegisterClick = viewModel::register,
-        navigateToConversations = navigateToConversations,
-        modifier = modifier
+        modifier = modifier,
+        navigateToLockScreen = navigateToLockScreen
     )
 }
 
@@ -87,7 +88,7 @@ fun AuthScreen(
     uiState: AuthUiState,
     onLoginClick: (String, String) -> Unit,
     onRegisterClick: (String, String) -> Unit,
-    navigateToConversations: () -> Unit,
+    navigateToLockScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val (jid, setJid) = remember { mutableStateOf("") }
@@ -106,7 +107,8 @@ fun AuthScreen(
 
     LaunchedEffect(uiState) {
         if (uiState is Success) {
-            navigateToConversations()
+//            navigateToConversations()
+            navigateToLockScreen()
         }
     }
 

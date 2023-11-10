@@ -11,11 +11,11 @@ object AuthDestination : MessengerNavigationDestination {
 }
 
 fun NavGraphBuilder.authGraph(
-    navigateToConversations: () -> Unit
+    navigateToLockScreen: () -> Unit
 ) {
     composable(
         route = AuthDestination.route,
     ) {
-        AuthRoute(navigateToConversations = navigateToConversations)
+        AuthRoute(navigateToLockScreen = navigateToLockScreen)
     }
 }

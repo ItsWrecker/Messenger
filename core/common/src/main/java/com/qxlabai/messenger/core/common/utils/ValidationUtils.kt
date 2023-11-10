@@ -7,4 +7,4 @@ val String.isValidJid: Boolean
 
 val String.isValidPasscode: Boolean
     get() = TextUtils.isEmpty(this).not() && android.util.Patterns.PHONE.matcher(this)
-        .matches() && this.length == 4
+        .matches() && this.length == 6

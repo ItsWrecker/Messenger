@@ -106,6 +106,7 @@ fun LockScreen(
     ) {
         passcodeHasError = (uiState is LockState.InvalidPasscode)
         Text(
+            modifier = Modifier.padding(vertical = 8.dp),
             text = stringResource(id = if (uiState is LockState.FirstLogin) R.string.passcode_title_re_enter else R.string.passcode_title),
             fontWeight = FontWeight.ExtraBold
         )
@@ -113,10 +114,10 @@ fun LockScreen(
         InputField(
             value = passcode,
             onValueChange = {
-                setPasscode(it.take(4))
+                setPasscode(it.take(6))
                 passcodeHasError = false
                 onPasscodeTyping()
-                if (it.length > 4) focusManager.clearFocus(true)
+                if (it.length > 5) focusManager.clearFocus(true)
             },
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Next, keyboardType = KeyboardType.NumberPassword
@@ -127,7 +128,7 @@ fun LockScreen(
             modifier = modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
         VerifyButton(
             uiState = uiState,
             onClick = {
@@ -197,15 +198,16 @@ private fun InputField(
             modifier = modifier.fillMaxWidth(),
             maxLines = 1,
             decorationBox = {
-                Row(horizontalArrangement = Arrangement.Center) {
-                    repeat(4) {
+                Row(horizontalArrangement = Arrangement.SpaceBetween) {
+                    repeat(6) {
                         CharView(index = it, text = value)
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
                     }
                 }
             })
         if (passcodeHasError) {
 
+            Spacer(modifier = Modifier.padding(vertical = 16.dp))
             Text(
                 text = stringResource(errorRes),
                 color = MaterialTheme.colorScheme.error,
@@ -235,7 +237,7 @@ private fun CharView(
                     else -> Color.DarkGray
                 }, RoundedCornerShape(12.dp)
             )
-            .padding(16.dp)
+            .padding(8.dp)
             .wrapContentSize(Alignment.Center)
             .requiredSize(24.dp),
         text = char,
@@ -244,6 +246,6 @@ private fun CharView(
         fontStyle = FontStyle.Normal,
         fontWeight = FontWeight.Bold,
         fontFamily = FontFamily.Monospace,
-        fontSize = 22.sp
+        fontSize = 18.sp
     )
 }

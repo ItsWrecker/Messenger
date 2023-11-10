@@ -69,11 +69,11 @@ fun MessengerNavHost(
             )
         })
         authGraph(
-            navigateToConversations = {
+            navigateToLockScreen = {
                 onNavigateToDestination(
                     NavigationParameters(
-                        destination = ConversationsDestination,
-                        popUpToInclusive = AuthDestination
+                        LockDestination,
+                        popUpToInclusive = LockDestination
                     )
                 )
             }
