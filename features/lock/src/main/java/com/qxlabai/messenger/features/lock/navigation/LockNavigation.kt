@@ -14,9 +14,10 @@ object LockDestination : MessengerNavigationDestination {
 }
 
 fun NavGraphBuilder.lockGraph(
-    navigateToConversations: () -> Unit
+    navigateToConversations: () -> Unit,
+    navigateToAuth: () -> Unit,
 ) {
     composable(route = LockDestination.route) {
-        LockRoute(navigateToConversations)
+        LockRoute(navigateToConversations = navigateToConversations, navigateToAuth = navigateToAuth)
     }
 }

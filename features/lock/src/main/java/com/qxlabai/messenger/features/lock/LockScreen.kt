@@ -29,6 +29,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -41,7 +42,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -63,7 +66,8 @@ import com.qxlabai.messenger.core.common.utils.isValidPasscode
 @OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
 fun LockRoute(
-    navigateToConversations: () -> Unit, viewModel: LockViewModel = hiltViewModel()
+    navigateToConversations: () -> Unit, viewModel: LockViewModel = hiltViewModel(),
+    navigateToAuth: () -> Unit,
 ) {
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -71,9 +75,11 @@ fun LockRoute(
     LockScreen(
         uiState = uiState,
         navigateToConversations = navigateToConversations,
+        navigateToAuth = navigateToAuth,
         modifier = Modifier,
         onVerifyClick = viewModel::verifyPasscode,
-        onPasscodeTyping = viewModel::passcodeTyping
+        onPasscodeTyping = viewModel::passcodeTyping,
+        onErase = viewModel::eraseEverything,
     )
 }
 
@@ -81,10 +87,13 @@ fun LockRoute(
 fun LockScreen(
     uiState: LockState,
     navigateToConversations: () -> Unit,
+    navigateToAuth: () -> Unit,
     modifier: Modifier,
     onVerifyClick: (String) -> Unit,
-    onPasscodeTyping: () -> Unit
-) {
+    onPasscodeTyping: () -> Unit,
+    onErase: () -> Unit,
+
+    ) {
 
     val (passcode, setPasscode) = remember {
         mutableStateOf("")
@@ -95,50 +104,88 @@ fun LockScreen(
         if (uiState is LockState.PasscodeVerified) {
             navigateToConversations()
         }
+        if (uiState is LockState.OnErased) {
+            navigateToAuth()
+        }
     })
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(32.dp)
-            .safeContentPadding(),
-        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically)
-    ) {
-        passcodeHasError = (uiState is LockState.InvalidPasscode)
-        Text(
-            modifier = Modifier.padding(vertical = 8.dp),
-            text = stringResource(id = if (uiState is LockState.FirstLogin) R.string.passcode_title_re_enter else R.string.passcode_title),
-            fontWeight = FontWeight.ExtraBold
-        )
 
-        InputField(
-            value = passcode,
-            onValueChange = {
-                setPasscode(it.take(6))
-                passcodeHasError = false
-                onPasscodeTyping()
-                if (it.length > 5) focusManager.clearFocus(true)
-            },
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Next, keyboardType = KeyboardType.NumberPassword
-            ),
-            keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
-            passcodeHasError = passcodeHasError || uiState is LockState.InvalidPasscode,
-            errorRes = R.string.invalid_passcode,
-            modifier = modifier.fillMaxWidth()
-        )
+    if (uiState is LockState.Reset) {
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(32.dp)
+                .safeContentPadding(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            LinearProgressIndicator(
+                modifier = Modifier.height(2.dp)
+            )
+            Text(text = "Erasing the data!!")
+            onErase()
+        }
+    } else {
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(32.dp)
+                .safeContentPadding(),
+            verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically)
+        ) {
+            passcodeHasError = (uiState is LockState.InvalidPasscode)
+            Text(
+                modifier = Modifier.padding(vertical = 8.dp),
+                text = stringResource(id = if (uiState is LockState.FirstLogin) R.string.passcode_title_re_enter else R.string.passcode_title),
+                fontWeight = FontWeight.ExtraBold
+            )
 
-        Spacer(modifier = Modifier.height(8.dp))
-        VerifyButton(
-            uiState = uiState,
-            onClick = {
-                passcodeHasError = passcode.isValidPasscode.not()
-                if (passcodeHasError.not()) {
-                    onVerifyClick(passcode)
-                }
-            },
-            enabled = uiState != LockState.Loading,
-        )
+            InputField(
+                value = passcode,
+                onValueChange = {
+                    setPasscode(it.take(6))
+                    passcodeHasError = false
+                    onPasscodeTyping()
+                    if (it.length > 5) focusManager.clearFocus(true)
+                },
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Next, keyboardType = KeyboardType.NumberPassword
+                ),
+                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
+                passcodeHasError = passcodeHasError || uiState is LockState.InvalidPasscode,
+                errorRes = R.string.invalid_passcode,
+                modifier = modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            if (uiState is LockState.AttemptsWarming) {
+                Text(
+                    modifier = Modifier.drawBehind {
+                        val strokeWidthPx = 1.dp.toPx()
+                        val verticalOffset = size.height - 2.sp.toPx()
+                        drawLine(
+                            color = Color.Red,
+                            strokeWidth = strokeWidthPx,
+                            start = Offset(0f, verticalOffset),
+                            end = Offset(size.width, verticalOffset)
+                        )
+                    },
+                    text = stringResource(id = R.string.warning),
+                )
+
+            }
+            VerifyButton(
+                uiState = uiState,
+                onClick = {
+                    passcodeHasError = passcode.isValidPasscode.not()
+                    if (passcodeHasError.not()) {
+                        onVerifyClick(passcode)
+                    }
+                },
+                enabled = uiState != LockState.Loading,
+            )
+        }
     }
 
 

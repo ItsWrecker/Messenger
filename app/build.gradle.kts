@@ -53,7 +53,7 @@ android {
 
         }
         val release by getting {
-            this.isMinifyEnabled = true
+//            this.isMinifyEnabled = true
             this.isDebuggable = false
             this.isJniDebuggable = false
             applicationIdSuffix = ".release"

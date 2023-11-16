@@ -13,6 +13,8 @@ import com.qxlabai.messenger.core.common.coroutines.MessengerDispatchers.IO
 import com.qxlabai.messenger.core.common.coroutines.Dispatcher
 import com.qxlabai.messenger.core.datastore.UserPreferences
 import com.qxlabai.messenger.core.datastore.UserPreferencesSerializer
+import com.qxlabai.messenger.core.datastore.erase.ErasePreferences
+import com.qxlabai.messenger.core.datastore.erase.EraseSerializer
 import com.qxlabai.messenger.core.datastore.lock.LockPreferenceSerializer
 import com.qxlabai.messenger.core.datastore.lock.LockPreferences
 import javax.inject.Singleton
@@ -50,4 +52,19 @@ object DataStoreModule {
     ) {
         context.dataStoreFile("lock_preferences.pb")
     }
+
+    @Provides
+    @Singleton
+    fun provideErasePreferences(
+        @ApplicationContext context: Context,
+        @Dispatcher(IO) ioDispatcher: CoroutineDispatcher,
+        erasePreferences: EraseSerializer
+    ): DataStore<ErasePreferences> = DataStoreFactory.create(
+        serializer = erasePreferences,
+        scope = CoroutineScope(ioDispatcher + SupervisorJob())
+    ) {
+        context.dataStoreFile("incorrect_passcode.pb")
+    }
+
+
 }

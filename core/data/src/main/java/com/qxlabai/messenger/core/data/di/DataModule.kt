@@ -9,6 +9,8 @@ import com.qxlabai.messenger.core.data.repository.ConversationsRepository
 import com.qxlabai.messenger.core.data.repository.MessagesRepository
 import com.qxlabai.messenger.core.data.repository.ContactsRepositoryImpl
 import com.qxlabai.messenger.core.data.repository.ConversationsRepositoryImpl
+import com.qxlabai.messenger.core.data.repository.EraseRepository
+import com.qxlabai.messenger.core.data.repository.EraseRepositoryImpl
 import com.qxlabai.messenger.core.data.repository.LockRepository
 import com.qxlabai.messenger.core.data.repository.LockRepositoryImpl
 import com.qxlabai.messenger.core.data.repository.MessagesRepositoryImpl
@@ -50,4 +52,10 @@ interface DataModule {
     fun bindsLockRepository(
         impl: LockRepositoryImpl
     ): LockRepository
+
+    @Binds
+    fun bindEraseRepository(
+        impl: EraseRepositoryImpl
+    ): EraseRepository
+
 }

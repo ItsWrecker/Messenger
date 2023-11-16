@@ -1,9 +1,12 @@
 package com.qxlabai.messenger.navigation
 
+import android.content.Intent
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import com.qxlabai.messenger.MainActivity
 import com.qxlabai.messenger.core.navigation.NavigationParameters
 import com.qxlabai.messenger.features.auth.navigation.AuthDestination
 import com.qxlabai.messenger.features.auth.navigation.authGraph
@@ -28,11 +31,14 @@ fun MessengerNavHost(
     modifier: Modifier = Modifier,
     startDestination: String = RouterDestination.route
 ) {
+    val content = LocalContext.current
     NavHost(
         navController = navController,
         startDestination = startDestination,
         modifier = modifier,
     ) {
+
+
         routerGraph(
             navigateToAuth = {
                 onNavigateToDestination(
@@ -60,14 +66,27 @@ fun MessengerNavHost(
             }
         )
 
-        lockGraph(navigateToConversations = {
-            onNavigateToDestination(
-                NavigationParameters(
-                    destination = ConversationsDestination,
-                    popUpToInclusive = LockDestination
+        lockGraph(
+            navigateToConversations = {
+                onNavigateToDestination(
+                    NavigationParameters(
+                        destination = ConversationsDestination,
+                        popUpToInclusive = LockDestination
+                    )
                 )
-            )
-        })
+            },
+            navigateToAuth = {
+//                onNavigateToDestination(
+//                    NavigationParameters(
+//                        destination = AuthDestination,
+//                        popUpToInclusive = RouterDestination
+//                    )
+//                )
+                val intent = Intent(content, MainActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                content.startActivity(intent)
+            }
+        )
         authGraph(
             navigateToLockScreen = {
                 onNavigateToDestination(
