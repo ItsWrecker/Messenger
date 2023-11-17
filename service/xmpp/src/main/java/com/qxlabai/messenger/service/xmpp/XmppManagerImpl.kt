@@ -59,15 +59,15 @@ class XmppManagerImpl @Inject constructor(
         SmackConfiguration.DEBUG = true
 
         try {
-            if (this::signaleOmemoService.isInitialized.not()) {
-                signaleOmemoService = SignalOmemoService.getInstance() as SignalOmemoService
-                OmemoConfiguration.setAddOmemoHintBody(false)
-            }
-            if (!omemoStoreBackendSet) {
-                signaleOmemoService.omemoStoreBackend =
-                    SignalCachingOmemoStore(SignalFileBasedOmemoStore(context.filesDir))
-                omemoStoreBackendSet = true
-            }
+//            if (this::signaleOmemoService.isInitialized.not()) {
+//                signaleOmemoService = SignalOmemoService.getInstance() as SignalOmemoService
+//                OmemoConfiguration.setAddOmemoHintBody(false)
+//            }
+//            if (!omemoStoreBackendSet) {
+//                signaleOmemoService.omemoStoreBackend =
+//                    SignalCachingOmemoStore(SignalFileBasedOmemoStore(context.filesDir))
+//                omemoStoreBackendSet = true
+//            }
         } catch (exception: Exception) {
             Log.e(TAG, exception.message, exception)
         }
@@ -153,15 +153,15 @@ class XmppManagerImpl @Inject constructor(
         return if (result.isSuccess) {
             val loginResult = connection.login(this)
             if (loginResult.isSuccess) {
-                if (connection.isAuthenticated) {
-                    omemoManager.initializeAsync(this@XmppManagerImpl)
-                    omemoManager.trustOmemoIdentity(
-                        omemoManager.ownDevice,
-                        omemoManager.ownFingerprint
-                    )
-                } else {
-                    Log.e(TAG, "connection must be initialized")
-                }
+//                if (connection.isAuthenticated) {
+//                    omemoManager.initializeAsync(this@XmppManagerImpl)
+//                    omemoManager.trustOmemoIdentity(
+//                        omemoManager.ownDevice,
+//                        omemoManager.ownFingerprint
+//                    )
+//                } else {
+//                    Log.e(TAG, "connection must be initialized")
+//                }
                 rosterManager.clearContacts(connection)
                 successHandler(result.getOrThrow())
             } else {
@@ -189,16 +189,16 @@ class XmppManagerImpl @Inject constructor(
         return if (result.isSuccess) {
             val loginResult = connection.login(this)
             if (loginResult.isSuccess) {
-                if (connection.isAuthenticated) {
-//                    omemoManager.purgeDeviceList()
-                    omemoManager.initializeAsync(this@XmppManagerImpl)
-                    omemoManager.trustOmemoIdentity(
-                        omemoManager.ownDevice,
-                        omemoManager.ownFingerprint
-                    )
-                } else {
-                    Log.e(TAG, "connection must be initialized")
-                }
+//                if (connection.isAuthenticated) {
+////                    omemoManager.purgeDeviceList()
+//                    omemoManager.initializeAsync(this@XmppManagerImpl)
+//                    omemoManager.trustOmemoIdentity(
+//                        omemoManager.ownDevice,
+//                        omemoManager.ownFingerprint
+//                    )
+//                } else {
+//                    Log.e(TAG, "connection must be initialized")
+//                }
                 rosterManager.clearContacts(connection)
                 successHandler(result.getOrThrow())
             } else {

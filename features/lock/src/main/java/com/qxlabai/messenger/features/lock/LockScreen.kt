@@ -1,10 +1,6 @@
 package com.qxlabai.messenger.features.lock
 
 import androidx.annotation.StringRes
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,8 +27,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -42,12 +36,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -55,12 +49,13 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.qxlabai.messenger.core.common.utils.isValidJid
 import com.qxlabai.messenger.core.common.utils.isValidPasscode
 
 @OptIn(ExperimentalLifecycleComposeApi::class)
@@ -92,9 +87,7 @@ fun LockScreen(
     onVerifyClick: (String) -> Unit,
     onPasscodeTyping: () -> Unit,
     onErase: () -> Unit,
-
-    ) {
-
+) {
     val (passcode, setPasscode) = remember {
         mutableStateOf("")
     }
@@ -136,7 +129,7 @@ fun LockScreen(
             passcodeHasError = (uiState is LockState.InvalidPasscode)
             Text(
                 modifier = Modifier.padding(vertical = 8.dp),
-                text = stringResource(id = if (uiState is LockState.FirstLogin) R.string.passcode_title_re_enter else R.string.passcode_title),
+                text = stringResource(id = if (uiState is LockState.FirstLogin) R.string.set_passcode else R.string.passcode_title),
                 fontWeight = FontWeight.ExtraBold
             )
 
@@ -159,22 +152,7 @@ fun LockScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            if (uiState is LockState.AttemptsWarming) {
-                Text(
-                    modifier = Modifier.drawBehind {
-                        val strokeWidthPx = 1.dp.toPx()
-                        val verticalOffset = size.height - 2.sp.toPx()
-                        drawLine(
-                            color = Color.Red,
-                            strokeWidth = strokeWidthPx,
-                            start = Offset(0f, verticalOffset),
-                            end = Offset(size.width, verticalOffset)
-                        )
-                    },
-                    text = stringResource(id = R.string.warning),
-                )
 
-            }
             VerifyButton(
                 uiState = uiState,
                 onClick = {
@@ -185,6 +163,59 @@ fun LockScreen(
                 },
                 enabled = uiState != LockState.Loading,
             )
+
+            if (uiState is LockState.FirstLogin) {
+                Text(
+                    text = buildAnnotatedString {
+                        withStyle(
+                            style = SpanStyle(
+                                color = Color.Cyan,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        ) {
+                            append(stringResource(id = R.string.disclaimer))
+                        }
+                        append("\n")
+
+                        withStyle(
+                            style = SpanStyle(
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Light
+                            )
+                        ) {
+                            append(stringResource(id = R.string.set_passcode_guide))
+                        }
+                    },
+                    textDecoration = TextDecoration.None
+                )
+            }
+            if (uiState is LockState.AttemptsWarming) {
+                Text(
+                    text = buildAnnotatedString {
+                        withStyle(
+                            style = SpanStyle(
+                                color = Color.Cyan,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        ) {
+                            append(stringResource(id = R.string.disclaimer))
+                        }
+                        append("\n")
+
+                        withStyle(
+                            style = SpanStyle(
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Light
+                            )
+                        ) {
+                            append(stringResource(id = R.string.warning))
+                        }
+                    },
+                    textDecoration = TextDecoration.None
+                )
+            }
         }
     }
 
@@ -207,7 +238,7 @@ fun VerifyButton(
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
             Text(
-                text = stringResource(R.string.verify).uppercase(),
+                text = stringResource(if (uiState is LockState.FirstLogin) R.string.set_passcode else R.string.verify).uppercase(),
                 modifier = Modifier.align(Alignment.Center)
             )
             if (uiState == LockState.Loading) {

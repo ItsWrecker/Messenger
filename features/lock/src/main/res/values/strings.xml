@@ -9,5 +9,7 @@
     <string name="verify">Verify Passcode</string>
     <string name="try_again">Try again</string>
     <string name="set_passcode">Set Passcode</string>
-    <string name="warning">Be careful, you have attempted many times, please relax and proceed. Else App and Account data will be erased</string>
+    <string name="set_passcode_guide">Protect your passcode. Enjoy secure access!</string>
+    <string name="disclaimer">Disclaimer:</string>
+    <string name="warning">You have attempted many times, please relax and proceed. Else App and Account data will be erased</string>
 </resources>

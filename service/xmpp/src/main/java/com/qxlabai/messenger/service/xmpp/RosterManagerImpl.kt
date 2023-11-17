@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 import org.jivesoftware.smack.packet.Presence
 import org.jivesoftware.smack.roster.PresenceEventListener
 import org.jivesoftware.smack.roster.Roster
-import org.jivesoftware.smack.roster.Roster.SubscriptionMode.accept_all
+import org.jivesoftware.smack.roster.Roster.SubscriptionMode.manual
 import org.jivesoftware.smack.roster.RosterEntry
 import org.jivesoftware.smack.roster.RosterListener
 import org.jivesoftware.smack.roster.SubscribeListener
@@ -42,9 +42,9 @@ class RosterManagerImpl @Inject constructor(
     private var subscribeListener: SubscribeListener? = null
 
     init {
-        Roster.setDefaultSubscriptionMode(accept_all)
+        Roster.setDefaultSubscriptionMode(manual)
         Roster.setRosterLoadedAtLoginDefault(true)
-        Roster.SubscriptionMode.accept_all
+        Roster.SubscriptionMode.manual
     }
 
     override suspend fun initialize(connection: XMPPTCPConnection) {
@@ -56,14 +56,20 @@ class RosterManagerImpl @Inject constructor(
 
         createNewContacts(roster.entries)
 
-        roster.addSubscriptionListener()
+        addSubscriptionListener()
 
         roster.addRosterListener()
 
         roster.addPresenceEventListener()
 
         scope.launch {
-            contactsCollector.collectShouldAddToRosterContacts { addToRoster(it) }
+            try {
+                if (connection.isAuthenticated) {
+                    contactsCollector.collectShouldAddToRosterContacts { addToRoster(it) }
+                }
+            } catch (exception: Exception) {
+                Log.e(TAG, exception.message, exception)
+            }
         }
     }
 
@@ -119,8 +125,10 @@ class RosterManagerImpl @Inject constructor(
         addRosterListener(rosterListener)
     }
 
-    private fun Roster.addSubscriptionListener() {
+    private fun addSubscriptionListener() {
         subscribeListener = SubscribeListener { from, subscribeRequest ->
+            Log.d(TAG, from.toString())
+            Log.d(TAG, subscribeRequest.toString())
             return@SubscribeListener SubscribeListener.SubscribeAnswer.Approve
         }
     }

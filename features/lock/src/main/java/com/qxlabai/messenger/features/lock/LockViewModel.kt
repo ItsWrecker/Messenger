@@ -1,5 +1,6 @@
 package com.qxlabai.messenger.features.lock
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import androidx.lifecycle.ViewModel
@@ -16,7 +17,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
+@SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class LockViewModel @Inject constructor(
     private val lockRepository: LockRepository,
@@ -31,6 +32,16 @@ class LockViewModel @Inject constructor(
     fun setPasscode(passcode: String) = viewModelScope.launch {
         lockRepository.setPasscode(passcode).let {
             _uiState.update { LockState.PasscodeVerified }
+        }
+    }
+
+    init {
+        viewModelScope.launch {
+            lockRepository.isFirstTimeUser().let {
+                if (it) _uiState.update {
+                    LockState.FirstLogin
+                }
+            }
         }
     }
 
