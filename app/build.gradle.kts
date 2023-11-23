@@ -49,7 +49,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            isMinifyEnabled = true
+            //isMinifyEnabled = true
 
         }
         val release by getting {

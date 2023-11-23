@@ -4,6 +4,6 @@
 -keep class org.bouncycastle.jcajce.provider.** { *; }
 -keep class net.sqlcipher.** { *; }
 -keep class net.sqlcipher.database.** { *; }
--keep class org.whispersystems.* {*;}
+-keep class org.whispersystems.** {*;}
 -keep class org.xmlpull.** { *; }
 -keep class org.bouncycastle.jcajce.provider.** { *; }

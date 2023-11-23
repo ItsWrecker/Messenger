@@ -11,7 +11,10 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import org.jivesoftware.smack.StanzaListener
 import org.jivesoftware.smack.packet.Presence
+import org.jivesoftware.smack.packet.PresenceBuilder
+import org.jivesoftware.smack.packet.Stanza
 import org.jivesoftware.smack.roster.PresenceEventListener
 import org.jivesoftware.smack.roster.Roster
 import org.jivesoftware.smack.roster.Roster.SubscriptionMode.manual
@@ -42,14 +45,13 @@ class RosterManagerImpl @Inject constructor(
     private var subscribeListener: SubscribeListener? = null
 
     init {
-        Roster.setDefaultSubscriptionMode(manual)
+        Roster.setDefaultSubscriptionMode(Roster.SubscriptionMode.accept_all)
         Roster.setRosterLoadedAtLoginDefault(true)
-        Roster.SubscriptionMode.manual
     }
 
     override suspend fun initialize(connection: XMPPTCPConnection) {
         roster = Roster.getInstanceFor(connection)
-        roster.subscriptionMode = Roster.SubscriptionMode.manual
+        roster.subscriptionMode = Roster.SubscriptionMode.accept_all
 
 
         Log.d(TAG, "Roster entries: ${roster.entries}")
@@ -71,6 +73,8 @@ class RosterManagerImpl @Inject constructor(
                 Log.e(TAG, exception.message, exception)
             }
         }
+        roster.addSubscribeListener(subscribeListener)
+
     }
 
     /**
@@ -129,6 +133,7 @@ class RosterManagerImpl @Inject constructor(
         subscribeListener = SubscribeListener { from, subscribeRequest ->
             Log.d(TAG, from.toString())
             Log.d(TAG, subscribeRequest.toString())
+
             return@SubscribeListener SubscribeListener.SubscribeAnswer.Approve
         }
     }

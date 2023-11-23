@@ -1,8 +1,8 @@
 package com.qxlabai.messenger.core.datastore
 
 import androidx.datastore.core.Serializer
-import com.qxlabai.messenger.service.encrypt.encryption.CryptoManager
-import com.qxlabai.messenger.service.encrypt.encryption.CryptoManagerImpl
+import com.qxlabai.messenger.core.datastore.encryption.CryptoManager
+import com.qxlabai.messenger.core.datastore.encryption.CryptoManagerImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi

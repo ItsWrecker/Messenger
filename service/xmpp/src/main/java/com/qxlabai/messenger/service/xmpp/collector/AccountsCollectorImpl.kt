@@ -53,7 +53,7 @@ class AccountsCollectorImpl @Inject constructor(
                 } catch (exception: Exception) {
 
                 }
-                onLogout()
+               // onLogout()
             }
         }
     }

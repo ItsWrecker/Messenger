@@ -30,6 +30,7 @@ import org.jivesoftware.smack.packet.Message as SmackMessage
 import org.jivesoftware.smack.packet.MessageBuilder
 import org.jivesoftware.smack.packet.Stanza
 import org.jivesoftware.smack.packet.StanzaBuilder
+import org.jivesoftware.smack.roster.Roster
 import org.jivesoftware.smack.tcp.XMPPTCPConnection
 import org.jivesoftware.smackx.carbons.packet.CarbonExtension
 import org.jivesoftware.smackx.chatstates.ChatState as SmackChatState
@@ -39,6 +40,7 @@ import org.jivesoftware.smackx.omemo.OmemoManager
 import org.jivesoftware.smackx.omemo.OmemoMessage
 import org.jivesoftware.smackx.omemo.OmemoService
 import org.jivesoftware.smackx.omemo.listener.OmemoMessageListener
+import org.jivesoftware.smackx.omemo.trust.OmemoFingerprint
 import org.jivesoftware.smackx.omemo.trust.OmemoTrustCallback
 import org.jivesoftware.smackx.receipts.DeliveryReceiptManager
 import org.jivesoftware.smackx.receipts.DeliveryReceiptManager.AutoReceiptMode.always
@@ -49,7 +51,7 @@ import org.jxmpp.jid.impl.JidCreate
 
 private const val TAG = "MessagesManagerImpl"
 
- class MessageManagerImpl @Inject constructor(
+class MessageManagerImpl @Inject constructor(
     private val messagesCollector: MessagesCollector,
     private val chatStateCollector: ChatStateCollector,
     private val messagesRepository: MessagesRepository,
@@ -67,10 +69,21 @@ private const val TAG = "MessagesManagerImpl"
     private var chatStateListener: ChatStateListener? = null
     private var receiptReceivedListener: ReceiptReceivedListener? = null
 
+    private lateinit var omemoManager: OmemoManager
+    private lateinit var connection: XMPPTCPConnection
+
     override suspend fun initialize(connection: XMPPTCPConnection, omemoManager: OmemoManager) {
         chatManager = ChatManager.getInstanceFor(connection)
         chatStateManager = ChatStateManager.getInstance(connection)
         deliveryReceiptManager = DeliveryReceiptManager.getInstanceFor(connection)
+
+        try {
+            this.omemoManager = omemoManager
+            this.connection = connection
+            omemoManager.purgeDeviceList()
+        } catch (exception: Exception) {
+            Log.e(TAG, exception.message, exception)
+        }
 
         scope.launch {
             messagesCollector.collectShouldSendMessages(sendMessages = ::sendMessages)
@@ -80,7 +93,6 @@ private const val TAG = "MessagesManagerImpl"
             chatStateCollector.collectChatState(onChatStateChanged = ::sendChatState)
         }
 
-        observeIncomingMessages()
         observeOutgoingMessages()
         observeChatState()
         observeDeliveryReceipt()
@@ -89,13 +101,32 @@ private const val TAG = "MessagesManagerImpl"
     // blocking
     private fun sendMessages(messages: List<Message>) {
         messages.forEach { message ->
-            val chat = chatManager.chatWith(JidCreate.entityBareFrom(message.peerJid))
-            val smackMessage = MessageBuilder
-                .buildMessage(message.stanzaId)
-                .addBody(null, message.body)
-                .build()
+            val jid = JidCreate.bareFrom(message.peerJid)
+            try {
+                omemoManager.requestDeviceListUpdateFor(jid)
+                if (omemoManager.getDevicesOf(jid)?.isEmpty() == true) {
+                    val roster = Roster.getInstanceFor(connection)
+                    roster.getPresence(jid)
+                }
 
-            chat.send(smackMessage)
+                omemoManager.getDevicesOf(jid)
+                omemoManager.getActiveFingerprints(jid)?.let { map ->
+                    Log.e(TAG, map.toString())
+                    map.entries.forEach {
+                        omemoManager.trustOmemoIdentity(it.key, it.value)
+                    }
+                }
+                val encryptedMessage = omemoManager.encrypt(jid, message.body)
+                val messageStanza = encryptedMessage.buildMessage(
+                    StanzaBuilder.buildMessage(message.stanzaId)
+                        .addExtension(encryptedMessage.element),
+                    jid
+                )
+                connection.sendStanza(messageStanza)
+
+            } catch (exception: Exception) {
+                Log.e(TAG, exception.message, exception)
+            }
         }
     }
 
@@ -105,10 +136,10 @@ private const val TAG = "MessagesManagerImpl"
         chatStateManager.setCurrentState(sendingChatState.chatState.asSmackEnum(), chat)
     }
 
-    private fun observeIncomingMessages() {
-        incomingChatMessageListener = IncomingChatMessageListener(::handleIncomingMessage)
-        chatManager.addIncomingListener(incomingChatMessageListener)
-    }
+//    private fun observeIncomingMessages() {
+//        incomingChatMessageListener = IncomingChatMessageListener(::handleIncomingMessage)
+//        chatManager.addIncomingListener(incomingChatMessageListener)
+//    }
 
     private fun observeOutgoingMessages() {
         outgoingChatMessageListener = OutgoingChatMessageListener(::handleOutgoingMessage)
@@ -127,20 +158,20 @@ private const val TAG = "MessagesManagerImpl"
         deliveryReceiptManager.addReceiptReceivedListener(receiptReceivedListener)
     }
 
-    private fun handleIncomingMessage(
-        from: EntityBareJid,
-        message: SmackMessage,
-        chat: Chat
-    ) {
-        Log.d(TAG, "IncomingListener - from: $from, message: $message, chat: $chat")
-
-        scope.launch {
-            messagesRepository.handleIncomingMessage(
-                message = message.asExternalModel(),
-                maybeNewConversation = from.asConversation()
-            )
-        }
-    }
+//    private fun handleIncomingMessage(
+//        from: EntityBareJid,
+//        message: SmackMessage,
+//        chat: Chat
+//    ) {
+//        Log.d(TAG, "IncomingListener - from: $from, message: $message, chat: $chat")
+//
+//        scope.launch {
+//            messagesRepository.handleIncomingMessage(
+//                message = message.asExternalModel(),
+//                maybeNewConversation = from.asConversation()
+//            )
+//        }
+//    }
 
     // TODO: This indicates that Smack have been tried to send the message and
     //  actually this does not mean that server received the message.
@@ -210,7 +241,26 @@ private const val TAG = "MessagesManagerImpl"
         }
     }
 
-     override fun handleIncomingMessage(stanza: Stanza?, decryptedMessage: OmemoMessage.Received?) {
+    override fun handleIncomingMessage(stanza: Stanza?, decryptedMessage: OmemoMessage.Received?) {
+        scope.launch {
+            try {
+                val stanzaId = stanza?.stanzaId
+                val message = decryptedMessage?.body
+                val peerJid = decryptedMessage?.senderDevice?.jid?.asBareJid()
 
-     }
- }
+                if (stanzaId != null && message != null && peerJid != null) {
+                    messagesRepository.handleIncomingMessage(
+                        message = Message.createReceivedMessage(
+                            stanzaId,
+                            message,
+                            peerJid.toString()
+                        ),
+                        maybeNewConversation = Conversation(peerJid.toString())
+                    )
+                }
+            } catch (exception: Exception) {
+                Log.e(TAG, exception.message, exception)
+            }
+        }
+    }
+}

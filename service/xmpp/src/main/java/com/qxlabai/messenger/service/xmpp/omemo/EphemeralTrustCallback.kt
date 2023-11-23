@@ -15,10 +15,10 @@ class EphemeralTrustCallback : OmemoTrustCallback {
     override fun getTrust(device: OmemoDevice?, fingerprint: OmemoFingerprint?): TrustState {
         val states = trustStates[device]
 
-        if (states != null) {
-            val trustState: TrustState? = states[fingerprint]
-            if (trustState != null) return trustState
-        }
+//        if (states != null) {
+//            val trustState: TrustState? = states[fingerprint]
+//            if (trustState != null) return trustState
+//        }
         return TrustState.trusted
     }
 

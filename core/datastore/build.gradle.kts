@@ -22,8 +22,6 @@ kapt {
 dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:model"))
-    implementation(project(":service:encrypt"))
-
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.androidx.dataStore.core)
     implementation(libs.serialization)

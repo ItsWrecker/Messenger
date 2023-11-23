@@ -142,7 +142,8 @@ fun AuthScreen(
             errorRes = R.string.uuid_id_not_valid,
             modifier = modifier.fillMaxWidth(),
             leadingIcon = { Icon(imageVector = Filled.Person, contentDescription = "person") },
-            enabled = uiState != Loading
+            enabled = uiState != Loading,
+            placeholder = R.string.uuid_placeholder
         )
 
         InputField(
@@ -172,7 +173,8 @@ fun AuthScreen(
             errorRes = R.string.error_password_not_valid,
             modifier = modifier.fillMaxWidth(),
             leadingIcon = { Icon(imageVector = Filled.Lock, contentDescription = "person") },
-            enabled = uiState != Loading
+            enabled = uiState != Loading,
+           placeholder = R.string.password_placeholder
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -230,6 +232,7 @@ private fun GeneralError(errorMessage: String) {
 @Composable
 private fun InputField(
     value: String,
+   @StringRes placeholder:Int,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     @StringRes labelRes: Int,
@@ -255,7 +258,8 @@ private fun InputField(
             isError = jidHasError,
             modifier = modifier.fillMaxWidth(),
             leadingIcon = leadingIcon,
-            enabled = enabled
+            enabled = enabled,
+            placeholder = { Text(text = stringResource(id = placeholder))}
         )
         if (jidHasError) {
             Text(
