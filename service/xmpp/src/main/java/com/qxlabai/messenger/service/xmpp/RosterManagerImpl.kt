@@ -31,7 +31,8 @@ private const val TAG = "RosterManager"
 
 class RosterManagerImpl @Inject constructor(
     private val contactsCollector: ContactsCollector,
-    private val contactsRepository: ContactsRepository
+    private val contactsRepository: ContactsRepository,
+    private val subscriptionManager: SubscriptionManager
 ) : RosterManager {
 
     private val scope = CoroutineScope(SupervisorJob())
@@ -41,8 +42,6 @@ class RosterManagerImpl @Inject constructor(
     private var rosterListener: RosterListener? = null
 
     private var presenceEventListener: PresenceEventListener? = null
-
-    private var subscribeListener: SubscribeListener? = null
 
     init {
         Roster.setDefaultSubscriptionMode(Roster.SubscriptionMode.accept_all)
@@ -58,8 +57,6 @@ class RosterManagerImpl @Inject constructor(
 
         createNewContacts(roster.entries)
 
-        addSubscriptionListener()
-
         roster.addRosterListener()
 
         roster.addPresenceEventListener()
@@ -73,7 +70,14 @@ class RosterManagerImpl @Inject constructor(
                 Log.e(TAG, exception.message, exception)
             }
         }
-        roster.addSubscribeListener(subscribeListener)
+
+        scope.launch {
+            try {
+                roster.addSubscribeListener(subscriptionManager.getSubscribeListener())
+            }catch (exception: Exception){
+
+            }
+        }
 
     }
 
@@ -129,14 +133,9 @@ class RosterManagerImpl @Inject constructor(
         addRosterListener(rosterListener)
     }
 
-    private fun addSubscriptionListener() {
-        subscribeListener = SubscribeListener { from, subscribeRequest ->
-            Log.d(TAG, from.toString())
-            Log.d(TAG, subscribeRequest.toString())
 
-            return@SubscribeListener SubscribeListener.SubscribeAnswer.Approve
-        }
-    }
+
+
 
     private fun Roster.addPresenceEventListener() {
         presenceEventListener = object : PresenceEventListener {

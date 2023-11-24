@@ -8,6 +8,8 @@ import com.qxlabai.messenger.service.xmpp.MessageManager
 import com.qxlabai.messenger.service.xmpp.MessageManagerImpl
 import com.qxlabai.messenger.service.xmpp.RosterManager
 import com.qxlabai.messenger.service.xmpp.RosterManagerImpl
+import com.qxlabai.messenger.service.xmpp.SubscriptionManager
+import com.qxlabai.messenger.service.xmpp.SubscriptionManagerImpl
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -22,4 +24,9 @@ interface XmppModule {
     fun bindsMessageManager(
         messageManagerImpl: MessageManagerImpl
     ): MessageManager
+
+    @Binds
+    fun bindsSubscriptionManager(
+        impl: SubscriptionManagerImpl
+    ): SubscriptionManager
 }

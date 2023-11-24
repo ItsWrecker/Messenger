@@ -109,7 +109,8 @@ class MessageManagerImpl @Inject constructor(
                     roster.getPresence(jid)
                 }
 
-                omemoManager.getDevicesOf(jid)
+
+
                 omemoManager.getActiveFingerprints(jid)?.let { map ->
                     Log.e(TAG, map.toString())
                     map.entries.forEach {
