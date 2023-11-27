@@ -20,7 +20,7 @@ interface ContactDao {
     )
     fun getContactEntity(jid: String): Flow<ContactEntity>
 
-    @Query(value = "SELECT * FROM contacts")
+    @Query(value = "SELECT * FROM contacts WHERE is_approved = 1")
     fun getContactEntitiesStream(): Flow<List<ContactEntity>>
 
     @Query(
@@ -30,6 +30,14 @@ interface ContactDao {
     """
     )
     fun getShouldAddToRosterStream(): Flow<List<ContactEntity>>
+
+    @Query(
+        value = """
+        SELECT * FROM contacts
+        WHERE is_approved = 1
+    """
+    )
+    fun getApprovedContactStream(): Flow<List<ContactEntity>>
 
     /**
      * Inserts [contactEntities] into the db if they don't exist, and update those that do

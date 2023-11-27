@@ -65,6 +65,7 @@ class RosterManagerImpl @Inject constructor(
             try {
                 if (connection.isAuthenticated) {
                     contactsCollector.collectShouldAddToRosterContacts { addToRoster(it) }
+
                 }
             } catch (exception: Exception) {
                 Log.e(TAG, exception.message, exception)

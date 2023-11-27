@@ -1,22 +1,16 @@
 package com.qxlabai.messenger.service.xmpp
 
-import android.content.Context
 import android.util.Log
-import com.qxlabai.messenger.core.model.data.Message
-import com.qxlabai.messenger.core.model.data.MessageStatus.SentDelivered
-import com.qxlabai.messenger.core.model.data.SendingChatState
 import com.qxlabai.messenger.core.data.repository.ConversationsRepository
 import com.qxlabai.messenger.core.data.repository.MessagesRepository
 import com.qxlabai.messenger.core.model.data.Conversation
+import com.qxlabai.messenger.core.model.data.Message
+import com.qxlabai.messenger.core.model.data.MessageStatus.SentDelivered
+import com.qxlabai.messenger.core.model.data.SendingChatState
 import com.qxlabai.messenger.service.xmpp.collector.ChatStateCollector
 import com.qxlabai.messenger.service.xmpp.collector.MessagesCollector
-import com.qxlabai.messenger.service.xmpp.model.asConversation
 import com.qxlabai.messenger.service.xmpp.model.asExternalEnum
-import com.qxlabai.messenger.service.xmpp.model.asExternalModel
 import com.qxlabai.messenger.service.xmpp.model.asSmackEnum
-import com.qxlabai.messenger.service.xmpp.omemo.EphemeralTrustCallback
-import dagger.hilt.android.qualifiers.ApplicationContext
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
@@ -26,28 +20,24 @@ import org.jivesoftware.smack.chat2.Chat
 import org.jivesoftware.smack.chat2.ChatManager
 import org.jivesoftware.smack.chat2.IncomingChatMessageListener
 import org.jivesoftware.smack.chat2.OutgoingChatMessageListener
-import org.jivesoftware.smack.packet.Message as SmackMessage
 import org.jivesoftware.smack.packet.MessageBuilder
 import org.jivesoftware.smack.packet.Stanza
 import org.jivesoftware.smack.packet.StanzaBuilder
 import org.jivesoftware.smack.roster.Roster
 import org.jivesoftware.smack.tcp.XMPPTCPConnection
-import org.jivesoftware.smackx.carbons.packet.CarbonExtension
-import org.jivesoftware.smackx.chatstates.ChatState as SmackChatState
 import org.jivesoftware.smackx.chatstates.ChatStateListener
 import org.jivesoftware.smackx.chatstates.ChatStateManager
 import org.jivesoftware.smackx.omemo.OmemoManager
 import org.jivesoftware.smackx.omemo.OmemoMessage
-import org.jivesoftware.smackx.omemo.OmemoService
-import org.jivesoftware.smackx.omemo.listener.OmemoMessageListener
-import org.jivesoftware.smackx.omemo.trust.OmemoFingerprint
-import org.jivesoftware.smackx.omemo.trust.OmemoTrustCallback
 import org.jivesoftware.smackx.receipts.DeliveryReceiptManager
 import org.jivesoftware.smackx.receipts.DeliveryReceiptManager.AutoReceiptMode.always
 import org.jivesoftware.smackx.receipts.ReceiptReceivedListener
 import org.jxmpp.jid.EntityBareJid
 import org.jxmpp.jid.Jid
 import org.jxmpp.jid.impl.JidCreate
+import javax.inject.Inject
+import org.jivesoftware.smack.packet.Message as SmackMessage
+import org.jivesoftware.smackx.chatstates.ChatState as SmackChatState
 
 private const val TAG = "MessagesManagerImpl"
 

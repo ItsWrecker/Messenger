@@ -18,6 +18,8 @@ import com.qxlabai.messenger.core.data.repository.PreferencesRepositoryImpl
 import com.qxlabai.messenger.core.data.repository.SendingChatStatesRepositoryImpl
 import com.qxlabai.messenger.core.data.repository.PreferencesRepository
 import com.qxlabai.messenger.core.data.repository.SendingChatStatesRepository
+import com.qxlabai.messenger.core.data.repository.SubscriptionRepository
+import com.qxlabai.messenger.core.data.repository.SubscriptionRepositoryImpl
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -57,5 +59,10 @@ interface DataModule {
     fun bindEraseRepository(
         impl: EraseRepositoryImpl
     ): EraseRepository
+
+    @Binds
+    fun bindSubscriptionRepository(
+        impl: SubscriptionRepositoryImpl
+    ): SubscriptionRepository
 
 }

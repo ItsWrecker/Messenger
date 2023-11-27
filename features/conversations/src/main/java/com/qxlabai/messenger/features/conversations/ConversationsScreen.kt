@@ -1,5 +1,6 @@
 package com.qxlabai.messenger.features.conversations
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -28,7 +29,10 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.PersonAdd
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -36,12 +40,16 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -71,6 +79,7 @@ import com.qxlabai.messenger.core.designsystem.component.MessengerTopAppBar
 import com.qxlabai.messenger.core.designsystem.component.NavigationBarsHeight
 import com.qxlabai.messenger.core.model.data.Contact
 import com.qxlabai.messenger.core.ui.ContactThumb
+import com.qxlabai.messenger.core.ui.ContactThumbSmall
 import com.qxlabai.messenger.features.conversations.ConversationsUiState.Loading
 import com.qxlabai.messenger.features.conversations.ConversationsUiState.Success
 
@@ -82,11 +91,15 @@ fun ConversationsRoute(
     navigateToSetting: (Unit) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ConversationsViewModel = hiltViewModel(),
-    contactViewModel: ContactsViewModel = hiltViewModel()
+    contactViewModel: ContactsViewModel = hiltViewModel(),
+    subscriptionViewModel: SubscriptionViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val contactsUiState by contactViewModel.uiState.collectAsStateWithLifecycle()
+
+    val subscriptionUIState by subscriptionViewModel.uiState.collectAsStateWithLifecycle()
+
 
     ConversationsScreen(
         uiState = uiState,
@@ -94,7 +107,10 @@ fun ConversationsRoute(
         navigateToChat = navigateToChat,
         modifier = modifier,
         addContact = contactViewModel::addContact,
-        navigateToSetting = navigateToSetting
+        navigateToSetting = navigateToSetting,
+        subscriptionUIState = subscriptionUIState,
+        onDecline = subscriptionViewModel::decline,
+        onApprove = subscriptionViewModel::approve
     )
 }
 
@@ -103,10 +119,13 @@ fun ConversationsRoute(
 fun ConversationsScreen(
     uiState: ConversationsUiState,
     contactsUiState: ContactsUiState,
+    subscriptionUIState: SubscriptionUIState,
     navigateToChat: (String) -> Unit,
     modifier: Modifier = Modifier,
     addContact: (String) -> Unit,
-    navigateToSetting: (Unit) -> Unit
+    navigateToSetting: (Unit) -> Unit,
+    onApprove: (String) -> Unit,
+    onDecline: (String) -> Unit
 ) {
     var isAddContactDialogVisible by rememberSaveable { mutableStateOf(false) }
 
@@ -145,7 +164,10 @@ fun ConversationsScreen(
             conversations(
                 uiState = uiState,
                 contactsUiState = contactsUiState,
-                navigateToChat = navigateToChat
+                navigateToChat = navigateToChat,
+                subscriptionUIState = subscriptionUIState,
+                onApprove = onApprove,
+                onDecline = onDecline
             )
         }
 
@@ -161,10 +183,14 @@ fun ConversationsScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 private fun LazyListScope.conversations(
     uiState: ConversationsUiState,
     contactsUiState: ContactsUiState,
-    navigateToChat: (String) -> Unit
+    subscriptionUIState: SubscriptionUIState,
+    navigateToChat: (String) -> Unit,
+    onApprove: (String) -> Unit,
+    onDecline: (String) -> Unit
 ) {
     when (uiState) {
         Loading -> {
@@ -205,7 +231,83 @@ private fun LazyListScope.conversations(
                     }
                 }
             }
-            if (uiState.conversations.isNotEmpty()){
+
+
+            when (subscriptionUIState) {
+                SubscriptionUIState.Idle -> Unit
+                is SubscriptionUIState.NewSubscription -> {
+                    if (subscriptionUIState.subscriptions.isNotEmpty()) {
+                        item {
+                            Text(
+                                text = stringResource(id = R.string.subscription_title),
+                                modifier = Modifier.padding(vertical = 8.dp, horizontal = 12.dp),
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                        items(subscriptionUIState.subscriptions) {
+                            Card(
+                                onClick = { /*TODO*/ },
+                                modifier = Modifier
+                                    .padding(8.dp)
+                                    .fillMaxWidth()
+                            ) {
+                                Row(
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier
+                                        .wrapContentHeight()
+                                        .fillMaxWidth()
+                                        .padding(4.dp)
+                                ) {
+                                    Row(
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                    ) {
+                                        ContactThumbSmall(
+                                            firstLetter = it.subscriptionFrom.take(1).uppercase(),
+                                            modifier = Modifier.padding(start = 8.dp)
+                                        )
+                                        Text(text = it.subscriptionFrom.split("@").first())
+                                    }
+
+                                    Row(
+                                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        IconButton(onClick = {
+                                            onDecline(it.subscriptionFrom)
+                                        }) {
+                                            Icon(
+                                                imageVector = Icons.Filled.Cancel,
+                                                contentDescription = "Cancel",
+                                                tint = MaterialTheme.colorScheme.onError
+                                            )
+                                        }
+                                        Divider(
+                                            modifier = Modifier
+                                                .width(2.dp)
+                                                .height(16.dp)
+                                        )
+
+                                        IconButton(onClick = {
+                                            onApprove(it.subscriptionFrom)
+                                        }) {
+                                            Icon(
+                                                imageVector = Icons.Filled.Check,
+                                                contentDescription = "Accept",
+                                                tint = MaterialTheme.colorScheme.surfaceTint
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+
+            if (uiState.conversations.isNotEmpty()) {
                 item {
                     Text(
                         text = stringResource(id = R.string.chat_title),
@@ -331,7 +433,9 @@ private fun LazyListScope.contacts(
                 item {
                     Text(
                         text = stringResource(id = R.string.contact_hind),
-                        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp),
                         fontSize = 12.sp,
                         textAlign = TextAlign.Justify
                     )

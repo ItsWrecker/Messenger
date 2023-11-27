@@ -7,6 +7,7 @@ import com.qxlabai.messenger.core.database.model.ContactEntity
 import com.qxlabai.messenger.core.database.model.asExternalModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 
 class ContactsRepositoryImpl @Inject constructor(
@@ -26,4 +27,6 @@ class ContactsRepositoryImpl @Inject constructor(
 
     override suspend fun updateContacts(contacts: List<Contact>) =
         contactDao.upsert(contacts.map(Contact::asEntity))
+
+
 }

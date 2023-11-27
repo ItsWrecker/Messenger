@@ -12,4 +12,6 @@ interface ContactsRepository {
     fun getShouldAddToRosterStream(): Flow<List<Contact>>
 
     suspend fun updateContacts(contacts: List<Contact>)
+
+
 }

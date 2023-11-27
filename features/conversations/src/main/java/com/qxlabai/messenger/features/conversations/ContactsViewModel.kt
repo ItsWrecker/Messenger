@@ -1,5 +1,6 @@
 package com.qxlabai.messenger.features.conversations
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,6 +21,7 @@ class ContactsViewModel @Inject constructor(
     val uiState: StateFlow<ContactsUiState> =
         contactsRepository.getContactsStream()
             .map { contacts ->
+                Log.e("CONTACTS", contacts.toString())
                 ContactsUiState.Success(contacts)
             }
             .stateIn(

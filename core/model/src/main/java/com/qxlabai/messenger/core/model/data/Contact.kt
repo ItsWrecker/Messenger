@@ -11,8 +11,15 @@ data class Contact(
     /**
      * To flag the contact to be added to roster entries
      */
-    val shouldAddToRoster: Boolean
+    val shouldAddToRoster: Boolean,
+    val subscribed: Subscribed
 ) {
+
+    enum class Subscribed {
+        APPROVED,
+        PENDING
+    }
+
     val firstLetter: String
         get() = jid.take(1).uppercase()
 
@@ -22,7 +29,18 @@ data class Contact(
                 jid = "$jid@wrecker.in",
                 presence = Presence(),
                 lastTime = System.now(),
-                shouldAddToRoster = true
+                shouldAddToRoster = true,
+                Subscribed.PENDING
             )
+
+        fun createWithSubscription(jid: String): Contact {
+            return Contact(
+                jid = jid,
+                presence = Presence(),
+                lastTime = System.now(),
+                shouldAddToRoster = true,
+                Subscribed.APPROVED
+            )
+        }
     }
 }

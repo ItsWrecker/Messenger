@@ -24,7 +24,9 @@ data class ContactEntity(
     @ColumnInfo(name = "last_time")
     val lastTime: Instant,
     @ColumnInfo(name = "should_add_to_roster")
-    val shouldAddToRoster: Boolean
+    val shouldAddToRoster: Boolean,
+    @ColumnInfo(name = "is_approved")
+    val isApproved: Boolean
 )
 
 fun ContactEntity.asExternalModel() = Contact(
@@ -36,5 +38,6 @@ fun ContactEntity.asExternalModel() = Contact(
         priority = presencePriority
     ),
     lastTime = lastTime,
-    shouldAddToRoster = shouldAddToRoster
+    shouldAddToRoster = shouldAddToRoster,
+    subscribed = if (isApproved) Contact.Subscribed.APPROVED else Contact.Subscribed.PENDING
 )

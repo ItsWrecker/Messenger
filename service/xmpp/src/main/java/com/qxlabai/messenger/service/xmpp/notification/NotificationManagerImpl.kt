@@ -34,6 +34,12 @@ class NotificationManagerImpl @Inject constructor(
         }
     }
 
+    override fun removeNotification(id: Int) {
+        val notificationManager: AndroidNotificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as AndroidNotificationManager
+        notificationManager.cancel(id)
+    }
+
     private fun createNotificationChannel() {
         val name = context.getString(R.string.channel_name)
         val descriptionText = context.getString(R.string.channel_description)

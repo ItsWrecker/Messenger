@@ -10,5 +10,6 @@ fun RosterEntry.asExternalModel() = Contact(
     jid = jid.asBareJid().toString(),
     presence = Presence(),
     lastTime = System.now(),
-    shouldAddToRoster = false
+    shouldAddToRoster = false,
+    subscribed = Contact.Subscribed.PENDING
 )

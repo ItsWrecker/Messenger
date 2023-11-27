@@ -7,11 +7,13 @@ import com.qxlabai.messenger.core.database.dao.ContactDao
 import com.qxlabai.messenger.core.database.dao.ConversationDao
 import com.qxlabai.messenger.core.database.dao.MessageDao
 import com.qxlabai.messenger.core.database.dao.SendingChatStateDao
+import com.qxlabai.messenger.core.database.dao.SubscriptionDao
 import com.qxlabai.messenger.core.database.model.ContactEntity
 import com.qxlabai.messenger.core.database.model.ConversationEntity
 import com.qxlabai.messenger.core.database.model.LastMessageEntity
 import com.qxlabai.messenger.core.database.model.MessageEntity
 import com.qxlabai.messenger.core.database.model.SendingChatStateEntity
+import com.qxlabai.messenger.core.database.model.SubscriptionEntity
 import com.qxlabai.messenger.core.database.util.InstantConverter
 
 @Database(
@@ -20,9 +22,10 @@ import com.qxlabai.messenger.core.database.util.InstantConverter
         MessageEntity::class,
         ConversationEntity::class,
         SendingChatStateEntity::class,
-        LastMessageEntity::class
+        LastMessageEntity::class,
+        SubscriptionEntity::class
     ],
-    version = 1,
+    version = 3,
     exportSchema = true
 )
 @TypeConverters(
@@ -37,5 +40,6 @@ abstract class MessengerDatabase : RoomDatabase() {
 
     abstract fun sendingChatStateDao(): SendingChatStateDao
 
+    abstract fun subscriptionDao(): SubscriptionDao
 
 }

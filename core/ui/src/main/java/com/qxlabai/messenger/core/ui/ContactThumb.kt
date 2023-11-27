@@ -36,3 +36,26 @@ fun ContactThumb(
         }
     }
 }
+
+@Composable
+fun ContactThumbSmall(
+    modifier: Modifier = Modifier,
+    firstLetter: String
+) {
+    Surface(
+        color = ColorUtil.getThumbColor(firstLetter[0]),
+        shape = CircleShape,
+        modifier = modifier
+    ) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.size(24.dp)
+        ) {
+            Text(
+                text = firstLetter,
+                color = Color.White,
+                style = MaterialTheme.typography.titleMedium
+            )
+        }
+    }
+}

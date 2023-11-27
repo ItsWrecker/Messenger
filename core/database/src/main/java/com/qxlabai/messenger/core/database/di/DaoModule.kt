@@ -9,6 +9,7 @@ import com.qxlabai.messenger.core.database.dao.ContactDao
 import com.qxlabai.messenger.core.database.dao.ConversationDao
 import com.qxlabai.messenger.core.database.dao.MessageDao
 import com.qxlabai.messenger.core.database.dao.SendingChatStateDao
+import com.qxlabai.messenger.core.database.dao.SubscriptionDao
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -33,4 +34,9 @@ object DaoModule {
     fun providesSendingChatStateDao(
         database: MessengerDatabase,
     ): SendingChatStateDao = database.sendingChatStateDao()
+
+    @Provides
+    fun provideSubscriptionDao(
+        database: MessengerDatabase
+    ): SubscriptionDao = database.subscriptionDao()
 }
