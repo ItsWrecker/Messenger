@@ -33,13 +33,18 @@ class UserPreferencesSerializer @Inject constructor() : Serializer<UserPreferenc
         }
 
     override suspend fun writeTo(t: UserPreferences, output: OutputStream) {
+//        try {
+//            val byteArray = ProtoBuf.encodeToByteArray(UserPreferences.serializer(), t)
+//            val encryptedBytes = cryptoManager.encrypt(byteArray, output)
+//            withContext(Dispatchers.IO) {
+//                output.write(encryptedBytes)
+//            }
+//        } catch (exception: Exception) {
+//            exception.printStackTrace()
+//        }
         val byteArray = ProtoBuf.encodeToByteArray(UserPreferences.serializer(), t)
         withContext(Dispatchers.IO) {
             output.write(byteArray)
         }
-//        val encryptedBytes = cryptoManager.encrypt(byteArray, output)
-//        withContext(Dispatchers.IO) {
-//            output.write(encryptedBytes)
-//        }
     }
 }

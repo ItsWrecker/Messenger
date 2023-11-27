@@ -49,11 +49,9 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            //isMinifyEnabled = true
-
         }
         val release by getting {
-//            this.isMinifyEnabled = true
+            this.isMinifyEnabled = true
             this.isDebuggable = false
             this.isJniDebuggable = false
             applicationIdSuffix = ".release"
