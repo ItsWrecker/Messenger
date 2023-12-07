@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="add">Add Contact</string>
+    <string name="contacts_title">Contacts</string>
+    <string name="new_contact">New Contact</string>
+    <string name="add_contact_title">Add new contact</string>
+    <string name="cancel">Cancel</string>
+    <string name="error_contact_is_not_valid_jabber_id">Contact is not a valid Jabber ID</string>
+</resources>

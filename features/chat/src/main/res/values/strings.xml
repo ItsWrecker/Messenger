@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="message_label">Enter your message…</string>
+    <string name="send">Send</string>
+    <string name="back">Back</string>
+    <string name="chat">Chat</string>
+    <string name="delivered">Delivered</string>
+</resources>

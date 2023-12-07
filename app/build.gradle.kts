@@ -1,74 +1,117 @@
+import org.jetbrains.kotlin.konan.properties.Properties
+import java.io.FileInputStream
+
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
+    id("android.application")
+    id("android.application.compose")
+    id("android.application.jacoco")
     kotlin("kapt")
-    id("com.google.dagger.hilt.android")
+    id("jacoco")
+    id("dagger.hilt.android.plugin")
+    id("com.google.gms.google-services")
 }
 
+@Suppress("UnstableApiUsage")
 android {
-    namespace = "com.qxlabai.messenger"
-    compileSdk = 34
+    namespace = Config.namespace
 
     defaultConfig {
-        applicationId = "com.qxlabai.messenger"
-        minSdk = 28
-        targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        applicationId = Environments.Debug.appId
+        versionCode = Environments.Debug.appVersionCode
+        versionName = Environments.Debug.appVersionName
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.qxlabai.messenger.MessengerTestRunner"
         vectorDrawables {
             useSupportLibrary = true
+        }
+        multiDexEnabled = true
+    }
+
+    signingConfigs {
+        create("release") {
+            val signingPropsFile = file("../signing.properties")
+            if (signingPropsFile.exists()) {
+                val signingProps = Properties()
+                signingProps.load(FileInputStream(signingPropsFile))
+                storeFile = file(signingProps.getProperty("RELEASE_STORE_FILE"))
+                storePassword = signingProps.getProperty("RELEASE_STORE_PASSWORD")
+                keyAlias = signingProps.getProperty("RELEASE_KEY_ALIAS")
+                keyPassword = signingProps.getProperty("RELEASE_KEY_PASSWORD")
+
+            }
         }
     }
 
     buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+        val debug by getting {
+//            applicationIdSuffix = ".debug"
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+        val release by getting {
+            this.isMinifyEnabled = true
+            this.isDebuggable = false
+            this.isJniDebuggable = false
+//            applicationIdSuffix = ".release"
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+
+            this.signingConfig = signingConfigs.getByName("release")
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-    kotlinOptions {
-        jvmTarget = "17"
-    }
-    buildFeatures {
-        compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.3"
-    }
-    packaging {
+
+
+
+    packagingOptions {
         resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes.add("/META-INF/{AL2.0,LGPL2.1}")
         }
     }
 }
 
+
 dependencies {
+    api(project(":features"))
+//    api(project(":core"))
+    implementation(project(":service:xmpp"))
+    implementation(project(":core:design"))
+    implementation(project(":core:navigation"))
+    implementation(project(":core:data"))
+    implementation(project(":core:model"))
 
-    implementation("androidx.core:core-ktx:1.12.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
-    implementation("androidx.activity:activity-compose:1.7.2")
-    implementation(platform("androidx.compose:compose-bom:2023.03.00"))
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-graphics")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3")
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    debugImplementation("androidx.compose.ui:ui-tooling")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
-    implementation ("androidx.constraintlayout:constraintlayout-compose:1.0.1")
-    implementation("com.google.dagger:hilt-android:2.44")
-    kapt("com.google.dagger:hilt-android-compiler:2.44")
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.lifecycle.runtimeCompose)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.accompanist.systemuicontroller)
 
-    val nav_version = "2.7.2"
-    implementation("androidx.navigation:navigation-compose:$nav_version")
+    api(libs.androidx.hilt.navigation.compose)
+    api(libs.androidx.navigation.compose)
+
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+    kaptAndroidTest(libs.hilt.compiler)
+
+    testImplementation(libs.junit4)
+    androidTestImplementation(libs.androidx.test.ext)
+    androidTestImplementation(libs.androidx.test.espresso.core)
+    androidTestImplementation(libs.androidx.compose.ui.test)
+
+    debugImplementation(libs.androidx.compose.ui.tooling)
+    debugImplementation(libs.androidx.compose.ui.testManifest)
+
+
+    compileOnly("com.android.support:multidex:1.0.3")
+    configurations.configureEach {
+        resolutionStrategy {
+            force(libs.junit4)
+            force("org.objenesis:objenesis:2.6")
+        }
+    }
 }
