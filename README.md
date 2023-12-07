@@ -1,8 +1,8 @@
-**1. Introduction:**
+**Introduction:**
 
 The Secure Messenger application is an innovative Android platform engineered to ensure the highest standards of secure text-based communication. Rooted in the XMPP protocol, the app prioritizes device-to-device secure communication through the OMEMO standard encryption. The project, developed primarily in Kotlin, incorporates cutting-edge Android development practices, including advanced features like Kotlin Coroutines and multithreading services. The application follows the Clean Architecture design pattern for superior stability and maintainability.
 
-**2. Tech Stack:**
+**Tech Stack:**
 
 - **Programming Language:** Kotlin
 - **Android SDK:** Native Android SDKs
@@ -13,7 +13,7 @@ The Secure Messenger application is an innovative Android platform engineered to
 - **Data Encryption:** Local data encryption for SQLite DB and DataStores
 - **Server:** Custom XMPP server deployed with Prosody
 
-**3. Key Features:**
+**Key Features:**
 
 *Authentication:*
 - Users can log in with existing UUID and password or register with a new UUID.
@@ -39,7 +39,7 @@ The Secure Messenger application is an innovative Android platform engineered to
 *Local Data Encryption:*
 - Utilizes local data encryption for SQLite DB and DataStores for comprehensive security.
 
-**4. Implementation Details:**
+**Implementation Details:**
 
 *XMPP Server Integration:*
 
@@ -66,23 +66,7 @@ To further optimize performance, multithreading services were implemented to han
 The application prioritizes data security by implementing local data encryption for both SQLite databases and DataStores. This ensures that sensitive user information stored locally is safeguarded against unauthorized access. The encryption mechanism adds an additional layer of protection, aligning with industry best practices for securing user data.
 
 
-**7. Challenges Faced:**
-
-- Integrating and fine-tuning the custom XMPP server for optimal performance.
-- Addressing concurrency challenges during the implementation of Kotlin Coroutines.
-
-**8. Future Enhancements:**
-
-- Integration of multimedia support for images, videos, and documents.
-- Implementation of group chat functionality.
-- Addition of voice and video calling features.
-- Enhanced customization options for user preferences.
-
-**9. Conclusion:**
-
-The Secure Messenger application stands as a testament to a robust and secure platform for text-based communication. The integration of Kotlin, Clean Architecture, Android Jetpack Compose, XMPP, and Prosody, along with advanced features such as Kotlin Coroutines and optimized multithreading, ensures superior performance, stability, and adherence to modern Android development practices.
-
-**11. References:**
+**References:**
 
 - Kotlin Programming Language. (https://kotlinlang.org/)
 - Android SDK Documentation. (https://developer.android.com/)
