@@ -10,6 +10,8 @@ import com.qxlabai.messenger.service.xmpp.RosterManager
 import com.qxlabai.messenger.service.xmpp.RosterManagerImpl
 import com.qxlabai.messenger.service.xmpp.SubscriptionManager
 import com.qxlabai.messenger.service.xmpp.SubscriptionManagerImpl
+import com.qxlabai.messenger.service.xmpp.notifications.XmppPushNotification
+import com.qxlabai.messenger.service.xmpp.notifications.XmppPushNotificationImpl
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -29,4 +31,9 @@ interface XmppModule {
     fun bindsSubscriptionManager(
         impl: SubscriptionManagerImpl
     ): SubscriptionManager
+
+    @Binds
+    fun bindXmppPushNotification(
+        impl: XmppPushNotificationImpl
+    ): XmppPushNotification
 }

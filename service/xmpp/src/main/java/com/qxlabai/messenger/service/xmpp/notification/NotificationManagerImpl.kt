@@ -22,9 +22,9 @@ class NotificationManagerImpl @Inject constructor(
             .setSmallIcon(R.drawable.ic_chat)
             .setContentTitle(title)
             .setContentText(text)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setPriority(NotificationCompat.PRIORITY_MIN)
             .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-            .setAutoCancel(true)
+            .setOngoing(true)
             .build()
     }
 

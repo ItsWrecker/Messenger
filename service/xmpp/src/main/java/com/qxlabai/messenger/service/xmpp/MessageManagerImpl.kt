@@ -1,21 +1,31 @@
 package com.qxlabai.messenger.service.xmpp
 
 import android.util.Log
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.messaging.FirebaseMessagingService
+import com.google.firebase.messaging.RemoteMessage
+import com.google.firebase.messaging.ktx.messaging
+import com.google.firebase.messaging.ktx.remoteMessage
+import com.qxlabai.messenger.core.data.repository.ContactsRepository
 import com.qxlabai.messenger.core.data.repository.ConversationsRepository
 import com.qxlabai.messenger.core.data.repository.MessagesRepository
 import com.qxlabai.messenger.core.model.data.Conversation
 import com.qxlabai.messenger.core.model.data.Message
 import com.qxlabai.messenger.core.model.data.MessageStatus.SentDelivered
+import com.qxlabai.messenger.core.model.data.Presence
 import com.qxlabai.messenger.core.model.data.SendingChatState
 import com.qxlabai.messenger.service.xmpp.collector.ChatStateCollector
 import com.qxlabai.messenger.service.xmpp.collector.MessagesCollector
 import com.qxlabai.messenger.service.xmpp.model.asExternalEnum
 import com.qxlabai.messenger.service.xmpp.model.asSmackEnum
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import okhttp3.ResponseBody
 import org.jivesoftware.smack.chat2.Chat
 import org.jivesoftware.smack.chat2.ChatManager
 import org.jivesoftware.smack.chat2.IncomingChatMessageListener
@@ -32,10 +42,16 @@ import org.jivesoftware.smackx.omemo.OmemoMessage
 import org.jivesoftware.smackx.receipts.DeliveryReceiptManager
 import org.jivesoftware.smackx.receipts.DeliveryReceiptManager.AutoReceiptMode.always
 import org.jivesoftware.smackx.receipts.ReceiptReceivedListener
+import org.jivesoftware.smackx.vcardtemp.VCardManager
 import org.jxmpp.jid.EntityBareJid
 import org.jxmpp.jid.Jid
 import org.jxmpp.jid.impl.JidCreate
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
 import javax.inject.Inject
+import kotlin.random.Random
 import org.jivesoftware.smack.packet.Message as SmackMessage
 import org.jivesoftware.smackx.chatstates.ChatState as SmackChatState
 
@@ -45,7 +61,9 @@ class MessageManagerImpl @Inject constructor(
     private val messagesCollector: MessagesCollector,
     private val chatStateCollector: ChatStateCollector,
     private val messagesRepository: MessagesRepository,
-    private val conversationsRepository: ConversationsRepository
+    private val conversationsRepository: ConversationsRepository,
+    private val contactsRepository: ContactsRepository,
+    private val fcmApi: Api
 ) : MessageManager {
 
     private val scope = CoroutineScope(SupervisorJob())
@@ -114,6 +132,29 @@ class MessageManagerImpl @Inject constructor(
                     jid
                 )
                 connection.sendStanza(messageStanza)
+
+                try {
+                    val vcardManager = VCardManager.getInstanceFor(connection)
+                    val vCard = vcardManager.loadVCard(jid.asBareJid().asEntityBareJidOrThrow())
+                    if (vCard.emailHome.isNullOrEmpty().not()) {
+
+                        scope.launch(Dispatchers.IO) {
+                            kotlin.runCatching {
+                                fcmApi.sendFcmMessage(
+                                    FcmMessage(
+                                        to = vCard.emailHome,
+                                        FcmNotification(
+                                            "message",
+                                            "from: ${connection.user.localpartOrNull}"
+                                        )
+                                    )
+                                )
+                            }
+                        }
+                    }
+                } catch (exception: Exception) {
+                    Log.e(TAG, exception.message, exception)
+                }
 
             } catch (exception: Exception) {
                 Log.e(TAG, exception.message, exception)

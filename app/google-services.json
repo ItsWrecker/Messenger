@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "280040326638",
+    "project_id": "qxlabai-messenger",
+    "storage_bucket": "qxlabai-messenger.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:280040326638:android:c3e6319084119fa44cfaff",
+        "android_client_info": {
+          "package_name": "com.qxlabai.messenger"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDYoi1sKSBw0xccYNk3n_moCjTZLFWv6eI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

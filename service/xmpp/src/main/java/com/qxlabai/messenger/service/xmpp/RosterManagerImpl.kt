@@ -11,16 +11,11 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import org.jivesoftware.smack.StanzaListener
 import org.jivesoftware.smack.packet.Presence
-import org.jivesoftware.smack.packet.PresenceBuilder
-import org.jivesoftware.smack.packet.Stanza
 import org.jivesoftware.smack.roster.PresenceEventListener
 import org.jivesoftware.smack.roster.Roster
-import org.jivesoftware.smack.roster.Roster.SubscriptionMode.manual
 import org.jivesoftware.smack.roster.RosterEntry
 import org.jivesoftware.smack.roster.RosterListener
-import org.jivesoftware.smack.roster.SubscribeListener
 import org.jivesoftware.smack.tcp.XMPPTCPConnection
 import org.jxmpp.jid.BareJid
 import org.jxmpp.jid.FullJid
@@ -74,8 +69,8 @@ class RosterManagerImpl @Inject constructor(
 
         scope.launch {
             try {
-                roster.addSubscribeListener(subscriptionManager.getSubscribeListener())
-            }catch (exception: Exception){
+                roster.addSubscribeListener(subscriptionManager.getSubscribeListener(connection))
+            } catch (exception: Exception) {
 
             }
         }
@@ -128,14 +123,12 @@ class RosterManagerImpl @Inject constructor(
 
             override fun presenceChanged(presence: Presence?) {
                 Log.d(TAG, "presenceChanged $presence")
+
             }
         }
 
         addRosterListener(rosterListener)
     }
-
-
-
 
 
     private fun Roster.addPresenceEventListener() {

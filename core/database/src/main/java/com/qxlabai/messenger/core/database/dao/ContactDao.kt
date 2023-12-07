@@ -44,4 +44,5 @@ interface ContactDao {
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(contactEntities: List<ContactEntity>)
+
 }

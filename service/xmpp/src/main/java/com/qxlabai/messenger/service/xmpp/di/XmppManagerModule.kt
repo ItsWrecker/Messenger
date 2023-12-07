@@ -12,6 +12,8 @@ import com.qxlabai.messenger.service.xmpp.MessageManager
 import com.qxlabai.messenger.service.xmpp.RosterManager
 import com.qxlabai.messenger.service.xmpp.XmppManager
 import com.qxlabai.messenger.service.xmpp.XmppManagerImpl
+import com.qxlabai.messenger.service.xmpp.notification.NotificationManager
+import com.qxlabai.messenger.service.xmpp.notifications.XmppPushNotification
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineDispatcher
@@ -27,14 +29,18 @@ class XmppManagerModule {
         messageManager: MessageManager,
         preferencesRepository: PreferencesRepository,
         @Dispatcher(IO) ioDispatcher: CoroutineDispatcher,
-        @ApplicationContext context: Context
+        @ApplicationContext context: Context,
+        xmppPushNotification: XmppPushNotification,
+        notificationManager: NotificationManager
     ): XmppManager {
         return XmppManagerImpl(
             rosterManager = rosterManager,
             messageManager = messageManager,
             preferencesRepository = preferencesRepository,
             ioDispatcher = ioDispatcher,
-            context
+            context = context,
+            xmppPushNotification = xmppPushNotification,
+            notificationManager = notificationManager
         )
     }
 }

@@ -6,6 +6,9 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission
+        android:name="android.permission.POST_NOTIFICATIONS"
+        tools:node="remove" />
 
     <application
         android:name=".MessengerApplication"
@@ -34,12 +37,46 @@
             android:name="com.qxlabai.messenger.service.xmpp.XmppService"
             android:exported="false" />
 
+        <service
+            android:name=".MessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
         <receiver
             android:name=".BroadcastReceiver"
             android:enabled="true"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.qxlabai.messenger.ACTION_APP_DATA_CLEARED" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".service.xmpp.unifiedpush.UnifiedPushReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="org.unifiedpush.android.connector.MESSAGE" />
+                <action android:name="org.unifiedpush.android.connector.UNREGISTERED" />
+                <action android:name="org.unifiedpush.android.connector.NEW_ENDPOINT" />
+                <action android:name="org.unifiedpush.android.connector.REGISTRATION_FAILED" />
+            </intent-filter>
+        </receiver>
+
+
+
+        <receiver
+            android:enabled="true"
+            android:name=".service.xmpp.unifiedpush.EmbeddedDistributor"
+            android:exported="false"
+            tools:ignore="Instantiatable">
+            <intent-filter>
+                <action android:name="org.unifiedpush.android.distributor.feature.BYTES_MESSAGE"/>
+                <action android:name="org.unifiedpush.android.distributor.REGISTER"/>
+                <action android:name="org.unifiedpush.android.distributor.UNREGISTER"/>
             </intent-filter>
         </receiver>
     </application>

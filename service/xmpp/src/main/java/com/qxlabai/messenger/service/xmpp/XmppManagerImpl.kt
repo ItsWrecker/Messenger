@@ -2,23 +2,30 @@ package com.qxlabai.messenger.service.xmpp
 
 import android.content.Context
 import android.util.Log
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
 import com.qxlabai.messenger.core.model.data.Account
 import com.qxlabai.messenger.core.model.data.AccountStatus.Online
 import com.qxlabai.messenger.core.model.data.AccountStatus.ServerNotFound
 import com.qxlabai.messenger.core.model.data.AccountStatus.Unauthorized
 import com.qxlabai.messenger.core.model.data.ConnectionStatus
 import com.qxlabai.messenger.core.data.repository.PreferencesRepository
+import com.qxlabai.messenger.service.xmpp.notification.NotificationManager
+import com.qxlabai.messenger.service.xmpp.notifications.XmppPushNotification
 import com.qxlabai.messenger.service.xmpp.omemo.EphemeralTrustCallback
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jivesoftware.smack.ConnectionConfiguration
 import org.jivesoftware.smack.ReconnectionManager
 import org.jivesoftware.smack.ReconnectionManager.ReconnectionPolicy.FIXED_DELAY
 import org.jivesoftware.smack.SmackConfiguration
 import org.jivesoftware.smack.SmackException
+import org.jivesoftware.smack.packet.IQ
 import org.jivesoftware.smack.packet.Message
 import org.jivesoftware.smack.packet.Stanza
 import org.jivesoftware.smack.tcp.XMPPTCPConnection
@@ -32,6 +39,9 @@ import org.jivesoftware.smackx.omemo.listener.OmemoMessageListener
 import org.jivesoftware.smackx.omemo.signal.SignalCachingOmemoStore
 import org.jivesoftware.smackx.omemo.signal.SignalFileBasedOmemoStore
 import org.jivesoftware.smackx.omemo.signal.SignalOmemoService
+import org.jivesoftware.smackx.push_notifications.PushNotificationsManager
+import org.jivesoftware.smackx.vcardtemp.VCardManager
+import org.jivesoftware.smackx.vcardtemp.packet.VCard
 import org.jxmpp.jid.parts.Localpart
 import org.jxmpp.jid.parts.Resourcepart
 
@@ -42,8 +52,11 @@ class XmppManagerImpl @Inject constructor(
     private val messageManager: MessageManager,
     private val preferencesRepository: PreferencesRepository,
     private val ioDispatcher: CoroutineDispatcher,
-    private val context: Context
+    private val xmppPushNotification: XmppPushNotification,
+    private val context: Context,
+    private val notificationManager: NotificationManager
 ) : XmppManager, OmemoManager.InitializationFinishedCallback {
+
 
     private var xmppConnection: XMPPTCPConnection? = null
 
@@ -56,7 +69,7 @@ class XmppManagerImpl @Inject constructor(
     private var omemoStoreBackendSet = false
 
     override suspend fun initialize() {
-        if (BuildConfig.DEBUG)  SmackConfiguration.DEBUG = true
+        if (BuildConfig.DEBUG) SmackConfiguration.DEBUG = true
         try {
             if (this::signaleOmemoService.isInitialized.not()) {
                 signaleOmemoService = SignalOmemoService.getInstance() as SignalOmemoService
@@ -252,6 +265,7 @@ class XmppManagerImpl @Inject constructor(
             withContext(ioDispatcher) {
                 rosterManager.initialize(connection)
                 messageManager.initialize(connection, omemoManager)
+                xmppPushNotification.initialize(connection)
             }
             Online
         } else {
@@ -270,6 +284,20 @@ class XmppManagerImpl @Inject constructor(
         Log.d(TAG, "isConnected: ${connection.isConnected}")
         Log.d(TAG, "isAuthenticated: ${connection.isAuthenticated}")
 
+        try {
+            CoroutineScope(Dispatchers.IO).launch {
+                FirebaseMessaging.getInstance().token.addOnSuccessListener { token ->
+                    if (token.isNullOrEmpty().not()) {
+                        val vcardManager = VCardManager.getInstanceFor(connection)
+                        vcardManager.saveVCard(VCard().apply {
+                            this.emailHome = token
+                        })
+                    }
+                }
+            }
+        } catch (exception: Exception) {
+            Log.e(TAG, exception.message, exception)
+        }
         return connection
     }
 

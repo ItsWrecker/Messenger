@@ -2,8 +2,13 @@ package com.qxlabai.messenger.service.xmpp
 
 import android.app.Service
 import android.content.Intent
+import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE
+import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
+import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
+import android.os.Build
 import android.os.IBinder
 import android.util.Log
+import androidx.annotation.RequiresApi
 import dagger.hilt.android.AndroidEntryPoint
 import com.qxlabai.messenger.core.data.repository.PreferencesRepository
 import com.qxlabai.messenger.service.xmpp.collector.AccountsCollector
@@ -13,6 +18,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import org.jivesoftware.smackx.push_notifications.PushNotificationsManager
 
 @AndroidEntryPoint
 class XmppService : Service() {
@@ -31,6 +37,7 @@ class XmppService : Service() {
     @Inject
     lateinit var notificationManager: NotificationManager
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         startForeground()
 
@@ -41,7 +48,6 @@ class XmppService : Service() {
         scope.launch {
             observeAccountsStream()
         }
-
         return super.onStartCommand(intent, flags, startId)
     }
 
@@ -64,6 +70,7 @@ class XmppService : Service() {
         )
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     private fun startForeground() {
         val notification = notificationManager.getNotification(
             title = "Messenger",

@@ -28,6 +28,8 @@ import com.qxlabai.messenger.service.xmpp.XmppService
 import com.qxlabai.messenger.ui.MessengerApp
 import javax.inject.Inject
 import kotlinx.coroutines.launch
+import org.bouncycastle.util.Store
+import org.unifiedpush.android.connector.UnifiedPush
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -38,6 +40,18 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
+
+
+//        val store = com.qxlabai.messenger.service.xmpp.unifiedpush.Store(this)
+//        if (store.featureByteMessage) {
+//            UnifiedPush.registerAppWithDialog(
+//                this,
+//                features = arrayListOf(UnifiedPush.FEATURE_BYTES_MESSAGE)
+//            )
+//        } else {
+//            UnifiedPush.registerAppWithDialog(this)
+//        }
+
 
         var themeConfig: ThemeConfig? by mutableStateOf(null)
 
@@ -99,3 +113,7 @@ private val ThemeConfig?.shouldUseDarkTheme: Boolean
         null, System -> isSystemInDarkTheme()
         else -> darkConfig == com.qxlabai.messenger.core.model.data.DarkConfig.Dark
     }
+
+
+
+

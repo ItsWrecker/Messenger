@@ -102,7 +102,7 @@ appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "a
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-protobuf", version.ref = "serialization"}
 sqlcipher = { group ="net.zetetic", name = "android-database-sqlcipher", version.ref = "sqlcipher"}
-tink = {group = "com.google.crypto.tink", name ="tink-android", version.ref ="tink"}
+#tink = {group = "com.google.crypto.tink", name ="tink-android", version.ref ="tink"}
 [plugins]
 #protobuf = { id = "com.google.protobuf", version.ref = "protobufPlugin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

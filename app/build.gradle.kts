@@ -1,4 +1,3 @@
-import org.jetbrains.kotlin.ir.backend.js.compile
 import org.jetbrains.kotlin.konan.properties.Properties
 import java.io.FileInputStream
 
@@ -9,6 +8,7 @@ plugins {
     kotlin("kapt")
     id("jacoco")
     id("dagger.hilt.android.plugin")
+    id("com.google.gms.google-services")
 }
 
 @Suppress("UnstableApiUsage")
@@ -44,7 +44,7 @@ android {
 
     buildTypes {
         val debug by getting {
-            applicationIdSuffix = ".debug"
+//            applicationIdSuffix = ".debug"
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -54,7 +54,7 @@ android {
             this.isMinifyEnabled = true
             this.isDebuggable = false
             this.isJniDebuggable = false
-            applicationIdSuffix = ".release"
+//            applicationIdSuffix = ".release"
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -105,6 +105,7 @@ dependencies {
 
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.testManifest)
+
 
     compileOnly("com.android.support:multidex:1.0.3")
     configurations.configureEach {

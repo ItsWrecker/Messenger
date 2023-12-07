@@ -4,6 +4,11 @@ pluginManagement {
         gradlePluginPortal()
         google()
         mavenCentral()
+        maven("https://www.jitpack.io") {
+            content {
+                includeModule("com.github.UnifiedPush", "android-connector")
+            }
+        }
     }
 }
 dependencyResolutionManagement {
@@ -11,6 +16,12 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven("https://www.jitpack.io") {
+            content {
+                includeModule("com.github.UnifiedPush", "android-connector")
+                includeModule("com.github.UnifiedPush", "android-embedded_fcm_distributor")
+            }
+        }
     }
 }
 rootProject.name = "Messenger"
